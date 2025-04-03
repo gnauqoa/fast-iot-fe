@@ -39,7 +39,6 @@ export const DeviceShow = () => {
   };
 
   const handleDeviceUpdate = (updatedDevice: IDevice) => {
-    console.log({ updatedDevice })
     setDevice(updatedDevice);
   };
 
