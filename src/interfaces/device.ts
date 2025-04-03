@@ -1,8 +1,8 @@
 import { IUser } from "./user";
 
 export enum DeviceStatus {
-  Offline = "offline",
   Online = "online",
+  Offline = "offline",
 }
 
 export const statusColors: Record<DeviceStatus, string> = {
@@ -10,27 +10,19 @@ export const statusColors: Record<DeviceStatus, string> = {
   [DeviceStatus.Offline]: "red",
 };
 
+export interface PostGISPoint {
+  type: string;
+  coordinates: [number, number];
+}
+
 export interface IDevice {
   id: number;
-  user_id: number | null;
   name: string;
+  lastUpdate: Date;
   status: DeviceStatus;
-  temp: number | null;
-  lux: number | null;
-  humi: number | null;
-  btn1: boolean;
-  btn2: boolean;
-  btn3: boolean;
-  btn4: boolean;
-  tempRange: number;
-  humiRange: number;
-  luxRange: number;
-  mosfetSpeed: number;
-  autoControl: boolean;
-  position: string | null;
-  createdAt: string;
-  updatedAt: string;
-  deletedAt: string | null;
-  lastUpdate: string | null;
+  position: PostGISPoint;
   user: IUser;
+  userId: number;
+  createdAt: Date;
+  updatedAt: Date;
 }
