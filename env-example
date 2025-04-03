@@ -1,0 +1,7 @@
+VITE_API_URL = "http://localhost:3000/api/v1"
+VITE_LIVE_PROVIDER_URL = "ws://localhost:3000"
+VITE_TOKEN_KEY = "token"
+VITE_REFRESH_TOKEN_KEY = "refresh-token"
+VITE_TOKEN_EXPIRES_AT_KEY = "token-expires"
+VITE_TIME_THRESHOLD = 60 * 60 * 1000
+VITE_PORT=10000
