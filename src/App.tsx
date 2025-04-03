@@ -26,7 +26,7 @@ import { API_URL } from "./constants";
 import { axiosInstance } from "./utility/axios";
 import { DeviceEdit, DeviceList, DeviceShow } from "./pages/devices";
 import { websocketProvider } from "./providers/liveProvider";
-
+import { Icon } from "@iconify/react";
 const App: React.FC = () => {
   return (
     <ConfigProvider locale={{ locale: "vi" }}>
@@ -54,9 +54,7 @@ const App: React.FC = () => {
                   meta: {
                     canDelete: true,
                     icon: (
-                      <TeamOutlined
-                        style={{ fontSize: "16px", color: "#08c" }}
-                      />
+                      <Icon icon="ph:motorcycle-duotone" width="16" height="16" />
                     ),
                   },
                 },
