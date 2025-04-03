@@ -38,12 +38,12 @@ export const DeviceModal = ({
   });
 
   const onSubmit = (values: any) => {
-    const { user_id, ...rest } = values;
+    const { userId, ...rest } = values;
 
     onFinish({
       ...rest,
-      user: query?.data?.data.find((user: IUser) => user.id === user_id),
-      user_id: user_id,
+      user: query?.data?.data.find((user: IUser) => user.id === userId),
+      userId: userId,
     });
   };
 
@@ -52,12 +52,12 @@ export const DeviceModal = ({
       if (isEditMode) {
         return formProps.form?.setFieldsValue({
           name: device.name,
-          user_id: device.user_id,
+          userId: device.userId,
         });
       }
       formProps.form?.setFieldsValue({
         name: "",
-        user_id: undefined,
+        userId: undefined,
       });
     }
   }, [open, isEditMode, formProps.form]);
@@ -87,7 +87,7 @@ export const DeviceModal = ({
             <Input />
           </Form.Item>
 
-          <Form.Item name="user_id" label="User">
+          <Form.Item name="userId" label="User">
             <Select
               {...selectProps}
               style={{ width: "100%" }}
