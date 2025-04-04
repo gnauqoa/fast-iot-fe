@@ -20,12 +20,14 @@ Admin dashboard for the Motobike Rescue application.
 ### Installation
 
 1. Clone the repository:
+
    ```bash
    git clone https://github.com/yourusername/motobike-rescue-admin.git
    cd motobike-rescue-admin
    ```
 
 2. Install dependencies:
+
    ```bash
    npm install
    # or
@@ -33,6 +35,7 @@ Admin dashboard for the Motobike Rescue application.
    ```
 
 3. Start the development server:
+
    ```bash
    npm run dev
    # or
@@ -48,6 +51,7 @@ Admin dashboard for the Motobike Rescue application.
 This project uses ESLint and Prettier for code quality and formatting.
 
 To run the linter:
+
 ```bash
 npm run lint
 # or
@@ -55,6 +59,7 @@ yarn lint
 ```
 
 To automatically fix linting issues:
+
 ```bash
 npm run lint:fix
 # or
@@ -62,6 +67,7 @@ yarn lint:fix
 ```
 
 To format code with Prettier:
+
 ```bash
 npm run format
 # or
@@ -77,6 +83,30 @@ This project uses Husky to enforce code quality checks before commits. The follo
 - Type checking with TypeScript
 
 These checks help maintain code quality and consistency throughout the project. If any check fails, the commit will be blocked until the issues are fixed.
+
+#### Troubleshooting Husky Issues
+
+If you encounter issues with Husky, try the following:
+
+1. **"eslint: command not found" error**:
+
+   - Make sure you've installed all dependencies with `npm install`
+   - Try running `npm run prepare` to reinstall Husky hooks
+   - Check that the lint-staged configuration in package.json uses `npx eslint` instead of just `eslint`
+
+2. **Hooks not running**:
+
+   - Ensure the `.husky` directory exists and contains the pre-commit file
+   - Make sure the pre-commit file is executable (`chmod +x .husky/pre-commit`)
+   - Try running `npm run prepare` to reinstall Husky hooks
+
+3. **ESLint configuration issues with ES modules**:
+
+   - If you see an error about `require() of ES Module`, make sure the ESLint configuration file uses the `.cjs` extension
+   - This is necessary because the project is configured as an ES module with `"type": "module"` in package.json
+
+4. **Test Husky setup**:
+   - Run `npm run test:husky` to verify that Husky is working correctly
 
 ## Docker Deployment
 
@@ -94,14 +124,6 @@ yarn docker:build
 npm run docker:run
 # or
 yarn docker:run
-```
-
-### Using Docker Compose
-
-```bash
-npm run docker:compose
-# or
-yarn docker:compose
 ```
 
 The application will be available at [http://localhost:3000](http://localhost:3000).

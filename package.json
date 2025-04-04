@@ -14,15 +14,16 @@
     "docker:build": "docker build -t motobike-rescue-admin .",
     "docker:run": "docker run -p 3000:80 motobike-rescue-admin",
     "prepare": "husky install",
-    "pre-commit": "lint-staged"
+    "pre-commit": "lint-staged",
+    "test:husky": "node scripts/test-husky.js"
   },
   "lint-staged": {
     "*.{js,jsx,ts,tsx}": [
-      "eslint --fix",
-      "prettier --write"
+      "npx eslint --fix",
+      "npx prettier --write"
     ],
     "*.{json,md}": [
-      "prettier --write"
+      "npx prettier --write"
     ]
   },
   "browserslist": {
