@@ -1,6 +1,5 @@
 import { Authenticated, Refine } from "@refinedev/core";
 import { RefineKbarProvider } from "@refinedev/kbar";
-
 import {
   ThemedLayoutV2,
   ErrorComponent,
@@ -24,9 +23,13 @@ import { Header } from "./components";
 import { UserEdit, UserList } from "./pages/users";
 import { API_URL } from "./constants";
 import { axiosInstance } from "./utility/axios";
-import { DeviceEdit, DeviceList, DeviceShow } from "./pages/devices";
+import { DeviceEdit, DeviceShow } from "./pages/devices";
+import { DeviceMap } from "./pages/devices/map";
+import { DeviceList } from "./pages/devices/list";
 import { websocketProvider } from "./providers/liveProvider";
 import { Icon } from "@iconify/react";
+import "leaflet/dist/leaflet.css";
+
 const App: React.FC = () => {
   return (
     <ConfigProvider locale={{ locale: "vi" }}>
@@ -55,6 +58,16 @@ const App: React.FC = () => {
                     canDelete: true,
                     icon: (
                       <Icon icon="ph:motorcycle-duotone" width="16" height="16" />
+                    ),
+                  },
+                },
+                {
+                  name: "devices-map",
+                  list: "/devices-map",
+                  meta: {
+                    canDelete: false,
+                    icon: (
+                      <Icon icon="mdi:map-marker" width="16" height="16" />
                     ),
                   },
                 },
@@ -104,6 +117,7 @@ const App: React.FC = () => {
                     <Route path="edit/:id" element={<DeviceEdit />} />
                     <Route path=":id" element={<DeviceShow />} />
                   </Route>
+                  <Route path="/devices-map" element={<DeviceMap />} />
                   <Route path="/users">
                     <Route index element={<UserList />} />
                     <Route path="edit/:id" element={<UserEdit />} />

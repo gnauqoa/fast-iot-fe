@@ -1,3 +1,4 @@
 export * from "./modal";
-export * from "./map";
-export * from "./table";
+export * from "./map-icons";
+export * from "./loading";
+export * from "./overlay-position";

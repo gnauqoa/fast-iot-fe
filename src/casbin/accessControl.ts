@@ -20,6 +20,7 @@ export const model = newModel(`
 export const adapter = new StringAdapter(`
 p, 1, users, (list)|(create)|(edit)|(show)|(delete)
 p, 1, devices, (list)|(create)|(edit)|(show)|(delete)
+p, 1, devices-map, (list)|(create)|(edit)|(show)|(delete)
 
 p, 2, devices, (list)|(create)|(edit)|(show)|(delete)
 
