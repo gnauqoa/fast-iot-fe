@@ -1,10 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import { MapContainer, TileLayer, Marker, Popup, Circle } from "react-leaflet";
 import L from "leaflet";
-import { Input, Button, Form, Space, Flex } from "antd";
+import { Input, Button, Form, Space, Flex, Tooltip, theme } from "antd";
 import { useScanDevice, DEFAULT_SCAN_PARAMS } from "../../hooks/use-scan-devices";
-import { deviceIcon, pickedLocationIcon, currentLocationIcon, Loading, OverlayPosition } from "../../components/devices";
+import { deviceIcon, pickedLocationIcon, currentLocationIcon, Loading, OverlayPosition } from "../../components/maps";
 import { MapClickHandler, getUserLocation } from "../../utils/map";
+import { RightOutlined, LeftOutlined } from "@ant-design/icons";
+import { IDevice } from "../../interfaces/device";
+import { DeviceList } from "../../components/maps/list";
+
 
 export const DeviceMap = () => {
   const [userLocation, setUserLocation] = useState<[number, number]>([DEFAULT_SCAN_PARAMS.latitude, DEFAULT_SCAN_PARAMS.longitude]); // Default to Ho Chi Minh City
@@ -16,6 +20,12 @@ export const DeviceMap = () => {
   const mapRef = useRef<L.Map | null>(null);
   const locationInitialized = useRef(false);
   const [scanRadius, setScanRadius] = useState<number>(0.5); // Default radius in meters
+  const [showDeviceList, setShowDeviceList] = useState(false);
+  const [hoveredDeviceId, setHoveredDeviceId] = useState<number | null>(null);
+  const [selectedDeviceId, setSelectedDeviceId] = useState<number | null>(null);
+  const markerRefs = useRef<Record<number, L.Marker | null>>({});
+  const deviceItemRefs = useRef<Record<number, HTMLDivElement | null>>({});
+  const { token } = theme.useToken();
 
   const {
     isLoading,
@@ -71,6 +81,51 @@ export const DeviceMap = () => {
   const handleScanWithRadius = async (values: { radius: number }) => {
     setScanRadius(values.radius);
     await handleScan(values);
+  };
+
+  const toggleDeviceList = () => {
+    setShowDeviceList(!showDeviceList);
+  };
+
+  const handleDeviceHover = (deviceId: number | null) => {
+    setHoveredDeviceId(deviceId);
+    
+    if (deviceId === null) {
+      if (selectedDeviceId !== hoveredDeviceId) {
+        const marker = markerRefs.current[hoveredDeviceId || 0];
+        if (marker) {
+          marker.closePopup();
+        }
+      }
+    } else {
+      const marker = markerRefs.current[deviceId];
+      if (marker) {
+        marker.openPopup();
+      }
+    }
+  };
+
+  const handleDeviceClick = (device: IDevice) => {
+    setSelectedDeviceId(device.id);
+    
+    // Navigate to the device location on the map
+    if (mapRef.current) {
+      const devicePosition: [number, number] = [
+        device.position.coordinates[1],
+        device.position.coordinates[0]
+      ];
+      
+      mapRef.current.setView(devicePosition, 15);
+    }
+  };
+
+  const handleMarkerClick = (deviceId: number) => {
+    setSelectedDeviceId(deviceId);
+    
+    // If device list is not visible, show it
+    if (!showDeviceList) {
+      setShowDeviceList(true);
+    }
   };
 
   if (error) {
@@ -130,87 +185,152 @@ export const DeviceMap = () => {
         style={{
           height: "calc(100vh - 250px)",
           position: "relative",
+          display: "flex",
         }}
       >
-        <Loading isLoading={isLoading} />
-        <OverlayPosition coordinates={hoverCoordinates} />
-
-        <MapContainer
-          center={pickedLocation || userLocation}
-          zoom={13}
-          style={{ height: "100%", width: "100%", }}
-          ref={mapRef}
+        <div
+          style={{
+            flex: 1,
+            position: "relative",
+            transition: "width 0.3s ease",
+            width: showDeviceList ? "calc(100% - 300px)" : "100%",
+          }}
         >
-          <TileLayer
-            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
-            url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-          />
+          <Loading isLoading={isLoading} />
+          <OverlayPosition coordinates={hoverCoordinates} />
 
-          <MapClickHandler
-            onMapClick={handleMapClick}
-            onMouseMove={handleMouseMove}
-          />
-
-          <Marker
-            position={userLocation}
-            icon={currentLocationIcon}
-          >
-            <Popup>
-              <div>
-                <h3>Your Location</h3>
-                <p>Latitude: {userLocation[0].toFixed(6)}</p>
-                <p>Longitude: {userLocation[1].toFixed(6)}</p>
-              </div>
-            </Popup>
-          </Marker>
-
-          {pickedLocation && (
-            <Marker
-              position={pickedLocation}
-              icon={pickedLocationIcon}
-            >
-              <Popup>
-                <div>
-                  <h3>Selected Location</h3>
-                  <p>Latitude: {pickedLocation[0].toFixed(6)}</p>
-                  <p>Longitude: {pickedLocation[1].toFixed(6)}</p>
-                </div>
-              </Popup>
-            </Marker>
-          )}
-
-          <Circle
+          <MapContainer
             center={pickedLocation || userLocation}
-            radius={scanRadius * 1000}
-            pathOptions={{
-              color: '#3b82f6',
-              fillColor: '#3b82f6',
-              fillOpacity: 0.1,
-              weight: 2
-            }}
+            zoom={13}
+            style={{ height: "100%", width: "100%", }}
+            ref={mapRef}
           >
+            <TileLayer
+              attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+              url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+            />
 
-          </Circle>
+            <MapClickHandler
+              onMapClick={handleMapClick}
+              onMouseMove={handleMouseMove}
+            />
 
-          {devices.map((device) => (
             <Marker
-              key={device.id}
-              position={[
-                device.position.coordinates[1],
-                device.position.coordinates[0],
-              ]}
-              icon={deviceIcon}
+              position={userLocation}
+              icon={currentLocationIcon}
             >
               <Popup>
                 <div>
-                  <h3>{device.name}</h3>
-                  <p>Status: {device.status}</p>
-                  <p>Last Update: {new Date(device.lastUpdate).toLocaleString()}</p>
+                  <h3>Your Location</h3>
+                  <p>Latitude: {userLocation[0].toFixed(6)}</p>
+                  <p>Longitude: {userLocation[1].toFixed(6)}</p>
                 </div>
               </Popup>
             </Marker>
-          ))}
-        </MapContainer>
+
+            {pickedLocation && (
+              <Marker
+                position={pickedLocation}
+                icon={pickedLocationIcon}
+              >
+                <Popup>
+                  <div>
+                    <h3>Selected Location</h3>
+                    <p>Latitude: {pickedLocation[0].toFixed(6)}</p>
+                    <p>Longitude: {pickedLocation[1].toFixed(6)}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            )}
+
+            <Circle
+              center={pickedLocation || userLocation}
+              radius={scanRadius * 1000}
+              pathOptions={{
+                color: '#3b82f6',
+                fillColor: '#3b82f6',
+                fillOpacity: 0.1,
+                weight: 2
+              }}
+            >
+
+            </Circle>
+
+            {devices.map((device) => (
+              <Marker
+                key={device.id}
+                position={[
+                  device.position.coordinates[1],
+                  device.position.coordinates[0],
+                ]}
+                icon={deviceIcon}
+                eventHandlers={{
+                  click: () => handleMarkerClick(device.id),
+                  popupclose: () => setSelectedDeviceId(null),
+                }}
+                ref={(ref) => {
+                  markerRefs.current[device.id] = ref;
+                  if (ref && (device.id === hoveredDeviceId || device.id === selectedDeviceId)) {
+                    ref.openPopup();
+                  }
+                }}
+              >
+                <Popup>
+                  <div>
+                    <h3>{device.name}</h3>
+                    <p>Status: {device.status}</p>
+                    <p>Last Update: {new Date(device.lastUpdate).toLocaleString()}</p>
+                  </div>
+                </Popup>
+              </Marker>
+            ))}
+          </MapContainer>
+        </div>
+
+        <Tooltip title={showDeviceList ? "Hide Device List" : "Show Device List"}>
+          <Button
+            type="default"
+            shape="circle"
+            icon={showDeviceList ?
+              <RightOutlined />
+              :
+              <LeftOutlined />
+            }
+            onClick={toggleDeviceList}
+            style={{
+              position: "absolute",
+              right: showDeviceList ? "280px" : "10px",
+              top: "50%",
+              transform: "translateY(-50%)",
+              zIndex: 1000,
+              transition: "right 0.3s ease",
+              backgroundColor: token.colorBgContainer,
+              borderColor: token.colorBorder,
+              boxShadow: token.boxShadow,
+              color: token.colorText,
+            }}
+          />
+        </Tooltip>
+
+        <div
+          style={{
+            width: showDeviceList ? "300px" : "0",
+            overflow: "hidden",
+            transition: "width 0.3s ease",
+            backgroundColor: token.colorBgContainer,
+            borderLeft: `1px solid ${token.colorBorder}`,
+          }}
+        >
+          {showDeviceList && (
+            <DeviceList
+              devices={devices}
+              selectedDeviceId={selectedDeviceId}
+              onDeviceHover={handleDeviceHover}
+              onDeviceClick={handleDeviceClick}
+              deviceItemRefs={deviceItemRefs}
+            />
+          )}
+        </div>
       </div>
     </>
   );
