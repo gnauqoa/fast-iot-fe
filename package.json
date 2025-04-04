@@ -12,7 +12,7 @@
     "lint:fix": "eslint . --ext .js,.jsx,.ts,.tsx --fix",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json,md}\"",
     "docker:build": "docker build -t motobike-rescue-admin .",
-    "docker:run": "docker run -p 3000:80 motobike-rescue-admin",
+    "docker:run": "docker run -p 5173:10000 motobike-rescue-admin",
     "prepare": "husky install",
     "pre-commit": "lint-staged",
     "test:husky": "node scripts/test-husky.js"
