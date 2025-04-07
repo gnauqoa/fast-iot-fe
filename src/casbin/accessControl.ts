@@ -1,4 +1,4 @@
-import { newModel, StringAdapter } from "casbin";
+import { newModel, StringAdapter } from 'casbin';
 
 export const model = newModel(`
   [request_definition]
@@ -21,6 +21,7 @@ export const adapter = new StringAdapter(`
 p, 1, users, (list)|(create)|(edit)|(show)|(delete)
 p, 1, devices, (list)|(create)|(edit)|(show)|(delete)
 p, 1, devices-map, (list)|(create)|(edit)|(show)|(delete)
+p, 1, templates, (list)|(create)|(edit)|(show)|(delete)
 
 p, 2, devices, (list)|(create)|(edit)|(show)|(delete)
 

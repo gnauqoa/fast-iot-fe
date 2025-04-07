@@ -1,25 +1,26 @@
-import { Edit, useForm } from "@refinedev/antd";
-import { Form, Input, Select, Tag } from "antd";
-import { IUser, UserRole, UserStatus } from "../../interfaces/user";
+import { Edit, useForm } from '@refinedev/antd';
+import { Form, Input, Select, Tag } from 'antd';
+import { IUser, UserRole, UserStatus } from '@/interfaces/user';
 
 export const UserEdit = () => {
   const { formProps, saveButtonProps, query, onFinish } = useForm<IUser>({
-    mutationMode: "optimistic",
+    mutationMode: 'optimistic',
   });
 
   const userData = query?.data?.data; // Dữ liệu user từ API
 
   // Màu sắc của Role và Status trong Select
   const roleColors: Record<UserRole, string> = {
-    [UserRole.ADMIN]: "gold",
-    [UserRole.USER]: "blue",
+    [UserRole.ADMIN]: 'gold',
+    [UserRole.USER]: 'blue',
   };
 
   const statusColors: Record<UserStatus, string> = {
-    [UserStatus.ACTIVE]: "green",
-    [UserStatus.INACTIVE]: "red",
+    [UserStatus.ACTIVE]: 'green',
+    [UserStatus.INACTIVE]: 'red',
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     onFinish({
       ...values,
@@ -35,18 +36,18 @@ export const UserEdit = () => {
         {...formProps}
         layout="vertical"
         initialValues={{
-          fullName: userData?.fullName || "",
-          email: userData?.email || "",
+          fullName: userData?.fullName || '',
+          email: userData?.email || '',
           role: userData?.role.name || UserRole.USER,
           status: userData?.status.name || UserStatus.ACTIVE,
-          createdAt: userData?.createdAt || "",
+          createdAt: userData?.createdAt || '',
         }}
         onFinish={onSubmit}
       >
         <Form.Item
           label="Full Name"
           name="fullName"
-          rules={[{ required: true, message: "Full Name is required" }]}
+          rules={[{ required: true, message: 'Full Name is required' }]}
         >
           <Input />
         </Form.Item>
@@ -55,8 +56,8 @@ export const UserEdit = () => {
           label="Email"
           name="email"
           rules={[
-            { required: true, message: "Email is required" },
-            { type: "email", message: "Enter a valid email" },
+            { required: true, message: 'Email is required' },
+            { type: 'email', message: 'Enter a valid email' },
           ]}
         >
           <Input disabled />
@@ -65,10 +66,10 @@ export const UserEdit = () => {
         <Form.Item
           label="Role"
           name="role"
-          rules={[{ required: true, message: "Role is required" }]}
+          rules={[{ required: true, message: 'Role is required' }]}
         >
           <Select
-            options={Object.values(UserRole).map((role) => ({
+            options={Object.values(UserRole).map(role => ({
               label: <Tag color={roleColors[role]}>{role}</Tag>,
               value: role,
             }))}
@@ -79,10 +80,10 @@ export const UserEdit = () => {
         <Form.Item
           label="Status"
           name="status"
-          rules={[{ required: true, message: "Status is required" }]}
+          rules={[{ required: true, message: 'Status is required' }]}
         >
           <Select
-            options={Object.values(UserStatus).map((status) => ({
+            options={Object.values(UserStatus).map(status => ({
               label: <Tag color={statusColors[status]}>{status}</Tag>,
               value: status,
             }))}

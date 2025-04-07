@@ -2,19 +2,15 @@ import {
   AuthActionResponse,
   AuthProvider,
   CheckResponse,
-} from "@refinedev/core";
-import {} from "constants";
-import {
-  REFRESH_TOKEN_KEY,
-  TOKEN_KEY,
-  TOKEN_EXPIRES_AT_KEY,
-  USER_DATA_KEY,
-} from "../constants";
-import { extractRoleInfoFromToken } from "../utility/user";
-import { axiosInstance } from "../utility/axios";
-import { AxiosResponse } from "axios";
-import { IUser } from "interfaces/user";
-import { connectSocket } from "./liveProvider";
+  PermissionResponse,
+} from '@refinedev/core';
+import {} from 'constants';
+import { REFRESH_TOKEN_KEY, TOKEN_KEY, TOKEN_EXPIRES_AT_KEY, USER_DATA_KEY } from '@/constants';
+import { extractRoleInfoFromToken } from '@/utility/user';
+import { axiosInstance } from '@/utility/axios';
+import { AxiosResponse } from 'axios';
+import { IUser } from 'interfaces/user';
+import { connectSocket } from './liveProvider';
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
@@ -35,14 +31,10 @@ export const authProvider: AuthProvider = {
         localStorage.setItem(USER_DATA_KEY, JSON.stringify(data.user));
         localStorage.setItem(TOKEN_KEY, data.token);
         localStorage.setItem(REFRESH_TOKEN_KEY, data.refreshToken);
-        localStorage.setItem(
-          TOKEN_EXPIRES_AT_KEY,
-          data.tokenExpires.toString()
-        );
+        localStorage.setItem(TOKEN_EXPIRES_AT_KEY, data.tokenExpires.toString());
 
         const userRoleId = extractRoleInfoFromToken(data.token);
-        const resourcePathToRedirect =
-          userRoleId?.id === 1 ? "/users" : "devices";
+        const resourcePathToRedirect = userRoleId?.id === 1 ? '/users' : 'devices';
         connectSocket();
         return {
           success: true,
@@ -52,29 +44,29 @@ export const authProvider: AuthProvider = {
         return {
           success: false,
           error: {
-            name: "LoginError",
-            message: "Invalid username or password",
+            name: 'LoginError',
+            message: 'Invalid username or password',
           },
         };
       }
     } catch (error) {
-      console.error("Error occurred during login:", error);
+      console.error('Error occurred during login:', error);
       return {
         success: false,
         error: {
-          name: "LoginError",
-          message: "An error occurred during login.",
+          name: 'LoginError',
+          message: 'An error occurred during login.',
         },
       };
     }
   },
   logout: async (): Promise<AuthActionResponse> => {
-    // ...
+    // @.
     localStorage.removeItem(TOKEN_KEY);
-    axiosInstance.defaults.headers.common["Authorization"] = undefined;
+    axiosInstance.defaults.headers.common['Authorization'] = undefined;
     return {
       success: true,
-      redirectTo: "/login",
+      redirectTo: '/login',
     };
   },
   check: async (): Promise<CheckResponse> => {
@@ -83,6 +75,7 @@ export const authProvider: AuthProvider = {
       authenticated: !!localStorage.getItem(TOKEN_KEY),
     };
   },
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   onError: async (error: any): Promise<AuthActionResponse> => {
     // Implement your error handling logic here
     console.error(error);
@@ -90,11 +83,11 @@ export const authProvider: AuthProvider = {
       success: false,
     };
   },
-  getIdentity: async (): Promise<any> => {
+  getIdentity: async (): Promise<IUser> => {
     const data: AxiosResponse<IUser> = await axiosInstance.get(`/auth/me`);
     return data.data;
   },
-  getPermissions: async (): Promise<any> => {
+  getPermissions: async (): Promise<PermissionResponse> => {
     const token = localStorage.getItem(TOKEN_KEY);
     if (token) {
       const userRoleId = extractRoleInfoFromToken(token);

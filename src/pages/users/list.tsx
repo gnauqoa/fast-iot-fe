@@ -2,19 +2,16 @@ import {
   List,
   useTable,
   EditButton,
-  ShowButton,
   DateField,
   getDefaultSortOrder,
   DeleteButton,
 } from '@refinedev/antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { Table, Space, Form, Input, DatePicker, Button, Tag, Select } from 'antd';
-import { IUser, UserStatus, UserRole } from '../../interfaces/user';
+import { Table, Space, Form, Input, Button, Tag, Select } from 'antd';
+import { IUser, UserStatus, UserRole } from '@/interfaces/user';
 import { CrudFilters, HttpError, LogicalFilter, useSubscription } from '@refinedev/core';
-import dayjs from 'dayjs';
-import { UserCreateModal } from '../../components/users';
+import { UserCreateModal } from '@/components/users';
 
-const { RangePicker } = DatePicker;
 const roleColors: Record<UserRole, string> = {
   [UserRole.ADMIN]: 'gold',
   [UserRole.USER]: 'blue',
@@ -37,6 +34,7 @@ export const UserList = () => {
   >({
     onSearch: params => {
       const filters: CrudFilters = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { fullName, role, status } = params as any;
 
       if (fullName) {

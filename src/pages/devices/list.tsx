@@ -1,45 +1,46 @@
-import { Table, Tag, Input, Select, Button, Form, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import { useEffect, useState } from "react";
-import { IDevice, DeviceStatus, statusColors } from "../../interfaces/device";
-import { socket } from "../../providers/liveProvider";
-import { CrudFilters } from "@refinedev/core";
-import { capitalize } from "../../utility/text";
-import { EditButton, ShowButton, DeleteButton, useTable } from "@refinedev/antd";
+import { Table, Tag, Input, Select, Button, Form, Space } from 'antd';
+import { SearchOutlined } from '@ant-design/icons';
+import { useEffect, useState } from 'react';
+import { IDevice, DeviceStatus, statusColors } from '@/interfaces/device';
+import { socket } from '@/providers/liveProvider';
+import { CrudFilters, Link } from '@refinedev/core';
+import { capitalize } from '@/utility/text';
+import { EditButton, ShowButton, DeleteButton, useTable } from '@refinedev/antd';
 import {
   HANDLE_DEVICE_DATA_CHANNEL,
   JOIN_DEVICE_ROOM_CHANNEL,
   LEAVE_DEVICE_ROOM_CHANNEL,
-} from "../../constants";
-import { DeviceModal } from "../../components/devices";
+} from '@/constants';
+import { DeviceModal } from '@/components/devices';
 
 export const DeviceList = () => {
   const { tableProps, searchFormProps, tableQuery } = useTable<IDevice>({
-    resource: "devices",
+    resource: 'devices',
     syncWithLocation: true,
-    onSearch: (params) => {
+    onSearch: params => {
       const filters: CrudFilters = [];
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { name, status } = params as any;
 
       if (name) {
         filters.push({
-          field: "name",
-          operator: "contains",
+          field: 'name',
+          operator: 'contains',
           value: name,
         });
       }
 
       if (status) {
         filters.push({
-          field: "status",
-          operator: "eq",
+          field: 'status',
+          operator: 'eq',
           value: status,
         });
       }
 
       return filters;
     },
-    defaultSetFilterBehavior: "replace",
+    defaultSetFilterBehavior: 'replace',
   });
 
   const [devices, setDevices] = useState<IDevice[]>([]);
@@ -47,8 +48,8 @@ export const DeviceList = () => {
   const [editDevice, setEditDevice] = useState<IDevice | undefined>(undefined);
 
   const handleDeviceUpdate = (updatedDevice: IDevice) => {
-    setDevices((prevDevices) =>
-      prevDevices.map((d) => (d.id === updatedDevice.id ? updatedDevice : d))
+    setDevices(prevDevices =>
+      prevDevices.map(d => (d.id === updatedDevice.id ? updatedDevice : d))
     );
   };
 
@@ -77,17 +78,9 @@ export const DeviceList = () => {
 
   return (
     <>
-      <Form
-        layout="inline"
-        {...searchFormProps}
-        style={{ marginBottom: 16, gap: 12 }}
-      >
+      <Form layout="inline" {...searchFormProps} style={{ marginBottom: 16, gap: 12 }}>
         <Form.Item name="name">
-          <Input
-            placeholder="Search by name..."
-            prefix={<SearchOutlined />}
-            allowClear
-          />
+          <Input placeholder="Search by name..." prefix={<SearchOutlined />} allowClear />
         </Form.Item>
 
         <Form.Item name="status">
@@ -114,7 +107,7 @@ export const DeviceList = () => {
 
         <Button
           type="primary"
-          style={{ marginLeft: "auto" }}
+          style={{ marginLeft: 'auto' }}
           onClick={() => {
             setEditDevice(undefined);
             setOpen(true);
@@ -136,18 +129,22 @@ export const DeviceList = () => {
             </Tag>
           )}
         />
+        <Table.Column title="Author" dataIndex={['user', 'fullName']} key="user" />
+
         <Table.Column
-          title="Author"
-          dataIndex={["user", "fullName"]}
-          key="user"
+          title="Template"
+          render={(val, record: IDevice) => (
+            <Link to={`/templates/${record.id}`}>{record.name}</Link>
+          )}
+          dataIndex={['template', 'name', 'id']}
+          key="template"
         />
+
         <Table.Column
           title="Last Update"
           dataIndex="lastUpdate"
           key="lastUpdate"
-          render={(date: string) =>
-            date ? new Date(date).toLocaleString() : "-"
-          }
+          render={(date: string) => (date ? new Date(date).toLocaleString() : '-')}
         />
         <Table.Column
           title="Actions"
@@ -177,4 +174,4 @@ export const DeviceList = () => {
       />
     </>
   );
-}; 
+};

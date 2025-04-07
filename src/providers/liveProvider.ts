@@ -3,9 +3,9 @@ import {
   HANDLE_LEAVED_DEVICE_ROOM_CHANNEL,
   LIVE_PROVIDER_URL,
   TOKEN_KEY,
-} from "../constants";
-import { LiveProvider } from "@refinedev/core";
-import { io, Socket } from "socket.io-client";
+} from '@/constants';
+import { LiveEvent, LiveProvider } from '@refinedev/core';
+import { io, Socket } from 'socket.io-client';
 
 let socketInstance: Socket | null = null;
 
@@ -17,19 +17,19 @@ const initializeSocket = (): Socket => {
       autoConnect: true,
     });
 
-    socketInstance.on("connect", () => {
-      console.log("Socket connected");
+    socketInstance.on('connect', () => {
+      console.log('Socket connected');
     });
 
-    socketInstance.on("disconnect", () => {
-      console.log("Socket disconnected");
+    socketInstance.on('disconnect', () => {
+      console.log('Socket disconnected');
     });
 
-    socketInstance.on(HANDLE_JOINED_DEVICE_ROOM_CHANNEL, (data: any) => {
-      console.log("Joined room: ", data);
+    socketInstance.on(HANDLE_JOINED_DEVICE_ROOM_CHANNEL, (data: object) => {
+      console.log('Joined room: ', data);
     });
-    socketInstance.on(HANDLE_LEAVED_DEVICE_ROOM_CHANNEL, (data: any) => {
-      console.log("Leaved room: ", data);
+    socketInstance.on(HANDLE_LEAVED_DEVICE_ROOM_CHANNEL, (data: object) => {
+      console.log('Leaved room: ', data);
     });
   }
   return socketInstance;
@@ -38,7 +38,7 @@ const initializeSocket = (): Socket => {
 export const connectSocket = () => {
   const socket = initializeSocket();
   if (!socket.connected) {
-    console.log("Connecting socket...");
+    console.log('Connecting socket@.');
     socket.auth = { token: localStorage.getItem(TOKEN_KEY) };
     socket.connect();
   }
@@ -46,13 +46,13 @@ export const connectSocket = () => {
 };
 
 export const websocketProvider: LiveProvider = {
-  unsubscribe: (subscription) => {
+  unsubscribe: subscription => {
     subscription.unsubscribe();
   },
   subscribe: ({ channel, callback }) => {
     const socket = connectSocket();
 
-    const eventHandler = (data: any) => callback(data);
+    const eventHandler = (data: LiveEvent) => callback(data);
     socket.on(channel, eventHandler);
 
     return {

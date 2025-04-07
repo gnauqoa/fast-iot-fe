@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { useCustom } from "@refinedev/core";
-import { IDevice } from "../interfaces/device";
+import { useState } from 'react';
+import { useCustom } from '@refinedev/core';
+import { IDevice } from '@/interfaces/device';
 
 export interface ScanQueryParams {
   latitude: number;
@@ -15,24 +15,25 @@ export const DEFAULT_SCAN_PARAMS: ScanQueryParams = {
   longitude: 106.660172,
   radius: 0.5 * 1000,
   limit: 50,
-  page: 1
+  page: 1,
 };
 
 export const useScanDevice = (initialParams: ScanQueryParams = DEFAULT_SCAN_PARAMS) => {
   const [queryParams, setQueryParams] = useState<ScanQueryParams>(initialParams);
 
-  const { data, isFetching, } = useCustom<{ data: IDevice[] }>({
-    url: "devices/scan",
-    method: "get",
+  const { data, isFetching } = useCustom<{ data: IDevice[] }>({
+    url: 'devices/scan',
+    method: 'get',
 
     config: {
-      query: queryParams
+      query: queryParams,
     },
     queryOptions: {
       enabled: true,
     },
   });
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const handleScan = async (values: any) => {
     const newParams = {
       ...queryParams,
@@ -45,16 +46,16 @@ export const useScanDevice = (initialParams: ScanQueryParams = DEFAULT_SCAN_PARA
     setQueryParams(prev => ({
       ...prev,
       latitude,
-      longitude
+      longitude,
     }));
   };
 
   return {
     queryParams,
     setQueryParams,
-    isLoading:isFetching,
+    isLoading: isFetching,
     data: data?.data.data || [],
     handleScan,
-    updateLocation
+    updateLocation,
   };
-}; 
+};

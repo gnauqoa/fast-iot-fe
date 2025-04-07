@@ -1,0 +1,54 @@
+.trapezoid {
+    clip-path: polygon(0% 0%, 100% 25%, 100% 75%, 0% 100%);
+}
+
+.react-flow .react-flow__node {
+    border: none;
+    background-color: transparent;
+    padding: 0;
+    box-shadow: none;
+    box-sizing: unset;
+}
+
+.react-flow .react-flow__node.selectable.selected {
+    box-shadow: none;
+}
+.react-flow .react-flow__node.selectable:focus:active {
+    box-shadow: none;
+}
+
+.react-flow .react-flow__node .react-flow__handle.custom-handle {
+    background-color: hsl(var(--card-foreground));
+    position: relative;
+    border-radius: 0;
+    border: none;
+    max-height: 5px;
+    min-height: 5px;
+    width: 20px;
+    transform: none;
+    top: 0;
+    transition: all 0.2s;
+}
+
+.react-flow .react-flow__node .react-flow__handle.custom-handle.connected {
+    background-color: hsl(var(--primary));
+}
+
+.react-flow .react-flow__node .react-flow__handle.custom-handle.connectionindicator:hover {
+    pointer-events: all;
+    background-color: rgb(191 219 254 / var(--tw-bg-opacity, 1));
+}
+
+.react-flow .react-flow__node .react-flow__handle.custom-handle.connectionindicator:focus,
+.react-flow .react-flow__node .react-flow__handle.custom-handle.connectingfrom,
+.react-flow .react-flow__node .react-flow__handle.custom-handle.connectingto {
+    background-color: hsl(var(--primary));
+}
+
+.react-flow__edge-path {
+    stroke-width: 5;
+}
+
+.react-flow__connection-path {
+    stroke-width: 5;
+}

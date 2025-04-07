@@ -1,19 +1,19 @@
-import { Link, useShow } from "@refinedev/core";
-import { Show } from "@refinedev/antd";
-import { Badge, Button, Flex, message, Typography } from "antd";
-import { DeviceStatus, IDevice } from "../../interfaces/device";
-import { useEffect, useState } from "react";
-import { socket } from "../../providers/liveProvider";
-import { capitalize } from "../../utility/text";
+import { Link, useShow } from '@refinedev/core';
+import { Show } from '@refinedev/antd';
+import { Badge, Button, Flex, message, Typography } from 'antd';
+import { DeviceStatus, IDevice } from '@/interfaces/device';
+import { useEffect, useState } from 'react';
+import { socket } from '@/providers/liveProvider';
+import { capitalize } from '@/utility/text';
 import {
   HANDLE_DEVICE_DATA_CHANNEL,
   JOIN_DEVICE_ROOM_CHANNEL,
   LEAVE_DEVICE_ROOM_CHANNEL,
-} from "../../constants";
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
-import { EyeOutlined, ReloadOutlined } from "@ant-design/icons";
-import { axiosInstance } from "@refinedev/nestjsx-crud";
+} from '@/constants';
+import dayjs from 'dayjs';
+import relativeTime from 'dayjs/plugin/relativeTime';
+import { EyeOutlined, ReloadOutlined } from '@ant-design/icons';
+import { axiosInstance } from '@refinedev/nestjsx-crud';
 
 dayjs.extend(relativeTime);
 const { Title } = Typography;
@@ -28,13 +28,11 @@ export const DeviceShow = () => {
   const fetchDeviceToken = async () => {
     if (!device) return;
     try {
-      const response = await axiosInstance.get(
-        `/devices/${device.id}/password`
-      );
+      const response = await axiosInstance.get(`/devices/${device.id}/password`);
       setDeviceToken(`${response.data.deviceKey}-${response.data.deviceToken}`);
-      message.success("Device token created!");
+      message.success('Device token created!');
     } catch (error) {
-      message.error("Failed to create device token.");
+      message.error('Failed to create device token.');
     }
   };
 
@@ -68,7 +66,7 @@ export const DeviceShow = () => {
             {device.name}
           </Title>
           <Badge
-            status={device.status === DeviceStatus.Online ? "success" : "error"}
+            status={device.status === DeviceStatus.Online ? 'success' : 'error'}
             text={capitalize(device.status)}
           />
           {device.lastUpdate ? (
@@ -96,9 +94,7 @@ export const DeviceShow = () => {
               </Typography.Text>
             ) : (
               <>
-                <Typography.Text type="secondary">
-                  Click to reveal
-                </Typography.Text>
+                <Typography.Text type="secondary">Click to reveal</Typography.Text>
                 <Button
                   icon={deviceToken ? <ReloadOutlined /> : <EyeOutlined />}
                   onClick={fetchDeviceToken}

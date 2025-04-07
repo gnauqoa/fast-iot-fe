@@ -1,17 +1,13 @@
-import React, { useContext } from "react";
+import React, { useContext } from 'react';
 import {
   LoginPageProps,
   LoginFormTypes,
   useActiveAuthProvider,
   useLogin,
   useTranslate,
-} from "@refinedev/core";
-import { ThemedTitle } from "@refinedev/antd";
-import {
-  containerStyles,
-  layoutStyles,
-  titleStyles,
-} from "../../components/styles/authStyles";
+} from '@refinedev/core';
+import { ThemedTitle } from '@refinedev/antd';
+import { containerStyles, layoutStyles, titleStyles } from '@/components/styles/authStyles';
 import {
   Row,
   Col,
@@ -25,8 +21,8 @@ import {
   LayoutProps,
   FormProps,
   theme,
-} from "antd";
-import { ColorModeContext } from "../../contexts/color-mode";
+} from 'antd';
+import { ColorModeContext } from '@/contexts/color-mode';
 
 const { Title } = Typography;
 const { useToken } = theme;
@@ -48,19 +44,19 @@ export const LoginPage: React.FC<LoginProps> = ({
     v3LegacyAuthProviderCompatible: Boolean(authProvider?.isLegacy),
   });
 
-  const pageTitleColor = mode === "light" ? "#000" : "#fff";
+  const pageTitleColor = mode === 'light' ? '#000' : '#fff';
 
   return (
     <Layout style={layoutStyles} {...(wrapperProps ?? {})}>
-      <Row justify="center" align="middle" style={{ height: "100vh" }}>
+      <Row justify="center" align="middle" style={{ height: '100vh' }}>
         <Col xs={22}>
           {title !== false && (
             <div
               style={{
-                display: "flex",
-                justifyContent: "center",
-                marginBottom: "32px",
-                fontSize: "32px",
+                display: 'flex',
+                justifyContent: 'center',
+                marginBottom: '32px',
+                fontSize: '32px',
                 fontWeight: 700,
                 color: pageTitleColor,
               }}
@@ -71,10 +67,7 @@ export const LoginPage: React.FC<LoginProps> = ({
 
           <Card
             title={
-              <Title
-                level={3}
-                style={{ color: token.colorPrimaryTextHover, ...titleStyles }}
-              >
+              <Title level={3} style={{ color: token.colorPrimaryTextHover, ...titleStyles }}>
                 Admin
               </Title>
             }
@@ -93,29 +86,22 @@ export const LoginPage: React.FC<LoginProps> = ({
             >
               <Form.Item
                 name="email"
-                label={translate("pages.login.fields.email", "Email")}
+                label={translate('pages.login.fields.email', 'Email')}
                 rules={[
-                  { required: true, message: "Vui lòng nhập email!" },
+                  { required: true, message: 'Vui lòng nhập email!' },
                   {
-                    type: "email",
-                    message: translate(
-                      "pages.login.errors.validEmail",
-                      "Email không hợp lệ!"
-                    ),
+                    type: 'email',
+                    message: translate('pages.login.errors.validEmail', 'Email không hợp lệ!'),
                   },
                 ]}
               >
-                <Input
-                  size="large"
-                  placeholder="Nhập email của bạn"
-                  autoComplete="email"
-                />
+                <Input size="large" placeholder="Nhập email của bạn" autoComplete="email" />
               </Form.Item>
 
               <Form.Item
                 name="password"
-                label={translate("pages.login.fields.password", "Mật khẩu")}
-                rules={[{ required: true, message: "Vui lòng nhập mật khẩu!" }]}
+                label={translate('pages.login.fields.password', 'Mật khẩu')}
+                rules={[{ required: true, message: 'Vui lòng nhập mật khẩu!' }]}
               >
                 <Input.Password
                   placeholder="Nhập mật khẩu"
@@ -126,13 +112,7 @@ export const LoginPage: React.FC<LoginProps> = ({
               </Form.Item>
 
               <Form.Item>
-                <Button
-                  type="primary"
-                  size="large"
-                  htmlType="submit"
-                  loading={isLoading}
-                  block
-                >
+                <Button type="primary" size="large" htmlType="submit" loading={isLoading} block>
                   Đăng nhập
                 </Button>
               </Form.Item>
