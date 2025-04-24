@@ -36,7 +36,7 @@ export const ReactFlowContextMenu = ({ onNewNode }: ReactFlowContextMenuProps) =
             Button
           </ContextMenuItem>
           <ContextMenuItem
-            onClick={e => {
+            onClick={() => {
               onNewNode(
                 'label',
                 {

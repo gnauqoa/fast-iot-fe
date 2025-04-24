@@ -6,11 +6,21 @@ import useReactFlow from '@/hooks/use-react-flow';
 import { ReactFlow } from '@xyflow/react';
 import { Button } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
-import { useContext } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import { ColorModeContext } from '@/contexts/color-mode';
 import { nodeTypes } from '@/utility/node';
+import { useForm } from '@refinedev/core';
+import { ITemplate } from '@/interfaces/template';
+import isEqual from 'lodash/isEqual';
 
 export const TemplateEdit = () => {
+  const { onFinish, query } = useForm<ITemplate>({
+    mutationMode: 'optimistic',
+    redirect: false,
+  });
+
+  const templateData = query?.data?.data;
+
   const { mode } = useContext(ColorModeContext);
 
   const {
@@ -22,20 +32,74 @@ export const TemplateEdit = () => {
     onEdgesChange,
     onNodeClick,
     onConnect,
-    onRestore,
-    onSave,
+    setNodes,
+    setEdges,
     onViewportChange,
     onContextMenu,
     onPaneClick,
     ref,
     viewport,
     onNewNode,
+    rfInstance,
   } = useReactFlow();
+
+  // State to track initial diagram state and changes
+  const [initialState, setInitialState] = useState<{
+    nodes: typeof nodes;
+    edges: typeof edges;
+  } | null>(null);
+  const [hasChanges, setHasChanges] = useState(false);
+
+  useEffect(() => {
+    if (templateData?.prototype) {
+      const newNodes = templateData.prototype?.nodes || [];
+      const newEdges = templateData.prototype?.edges || [];
+
+      setInitialState({
+        nodes: newNodes,
+        edges: newEdges,
+      });
+
+      setNodes(newNodes);
+      setEdges(newEdges);
+    }
+  }, [templateData, onViewportChange, setNodes, setEdges]);
+
+  useEffect(() => {
+    if (!initialState) return;
+
+    const currentState = { nodes, edges };
+    const hasStateChanged = !isEqual(initialState, currentState);
+    setHasChanges(hasStateChanged);
+  }, [nodes, edges, viewport, initialState]);
+
+  const handleSave = () => {
+    const data = rfInstance?.toObject();
+    if (!data) return;
+    const { x, y, zoom } = data.viewport || {};
+
+    onFinish({
+      prototype: {
+        nodes: data?.nodes,
+        edges: data?.edges,
+        viewport: {
+          x,
+          y,
+          zoom,
+        },
+      },
+    });
+
+    setInitialState({
+      nodes: data.nodes,
+      edges: data.edges,
+    });
+  };
 
   return (
     <div
       style={{ height: `calc(100vh - ${150}px)` }}
-      className="relative flex  w-full flex-col bg-[#fff]"
+      className="relative flex w-full flex-col bg-[#fff]"
     >
       <NodeMenu onNodeChange={onNodesChange} node={selectedNode} />
       <ContextMenu>
@@ -61,8 +125,9 @@ export const TemplateEdit = () => {
             <Background />
             <Controls />
             <div className="absolute right-[32px] z-20 mt-5 flex flex-row items-center gap-3">
-              <Button onClick={onRestore}>Import</Button>
-              <Button onClick={onSave}>Export</Button>
+              <Button onClick={handleSave} disabled={!hasChanges}>
+                Save
+              </Button>
             </div>
           </ReactFlow>
         </ContextMenuTrigger>
