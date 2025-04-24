@@ -1,5 +1,5 @@
-import { Card, Flex, Typography } from "antd";
-import { ReactNode } from "react";
+import { Card, Flex, Typography } from 'antd';
+import { ReactNode } from 'react';
 
 const { Title } = Typography;
 
@@ -25,9 +25,9 @@ export const SensorCard = ({
         </Flex>
         <Flex align="start">
           <Title style={{ margin: 0 }} level={2}>
-            {value ?? "0"}
+            {value ?? '0'}
           </Title>
-          <Title style={{ margin: "0px 0px 0px 4px" }} level={5}>
+          <Title style={{ margin: '0px 0px 0px 4px' }} level={5}>
             {uint}
           </Title>
         </Flex>

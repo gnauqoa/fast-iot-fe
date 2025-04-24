@@ -9,27 +9,27 @@ export type NodeMenuProps = {
 
 export type NodeMenuType = (props: NodeMenuProps) => ReactNode;
 
-const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
+const NodeMenu: NodeMenuType = ({ node }) => {
   const open = !!node;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleDataChange = (key: string, value: any) => {
-    if (!node) return;
+  // const handleDataChange = (key: string, value: any) => {
+  //   if (!node) return;
 
-    onNodeChange([
-      {
-        id: node.id,
-        type: 'replace',
-        item: {
-          ...node,
-          data: {
-            ...node.data,
-            [key]: value,
-          },
-        },
-      },
-    ]);
-  };
+  //   onNodeChange([
+  //     {
+  //       id: node.id,
+  //       type: 'replace',
+  //       item: {
+  //         ...node,
+  //         data: {
+  //           ...node.data,
+  //           [key]: value,
+  //         },
+  //       },
+  //     },
+  //   ]);
+  // };
 
   if (!open) return <></>;
 

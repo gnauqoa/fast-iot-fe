@@ -28,7 +28,7 @@ import { DeviceMap } from '@/pages/devices/map';
 import { DeviceList } from '@/pages/devices/list';
 import { websocketProvider } from '@/providers/liveProvider';
 import { Icon } from '@iconify/react';
-import { TemplateList, TemplateShow } from '@/pages/templates';
+import { TemplateEdit, TemplateList, TemplateShow } from '@/pages/templates';
 
 const App: React.FC = () => {
   return (
@@ -56,7 +56,7 @@ const App: React.FC = () => {
                   show: '/devices/:id',
                   meta: {
                     canDelete: true,
-                    icon: <Icon icon="ph:motorcycle-duotone" width="16" height="16" />,
+                    icon: <Icon icon="bitcoin-icons:node-hardware-filled" width="16" height="16" />,
                   },
                 },
                 {
@@ -121,6 +121,7 @@ const App: React.FC = () => {
                   <Route path="/templates">
                     <Route index element={<TemplateList />} />
                     <Route path=":id" element={<TemplateShow />} />
+                    <Route path="edit/:id" element={<TemplateEdit />} />
                   </Route>
                   <Route path="/devices-map" element={<DeviceMap />} />
                   <Route path="/users">

@@ -4,7 +4,6 @@ import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import ReactDOMServer from 'react-dom/server';
-import React from 'react';
 import type { SVGProps } from 'react';
 
 export function BitcoinIconsNodeHardwareFilled(props: SVGProps<SVGSVGElement>) {
@@ -20,7 +19,6 @@ export function BitcoinIconsNodeHardwareFilled(props: SVGProps<SVGSVGElement>) {
   );
 }
 
-// Fix for default marker icons in React Leaflet
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({

@@ -70,15 +70,7 @@ export const TemplateList = () => {
           dataIndex="actions"
           render={(_, record: ITemplate) => (
             <Space>
-              <EditButton
-                hideText
-                size="small"
-                recordItemId={record.id}
-                onClick={() => {
-                  setEditTemplate(record);
-                  setOpen(true);
-                }}
-              />
+              <EditButton hideText size="small" recordItemId={record.id} />
               <ShowButton hideText size="small" recordItemId={record.id} />
               <DeleteButton hideText size="small" recordItemId={record.id} />
             </Space>

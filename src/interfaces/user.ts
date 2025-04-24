@@ -1,23 +1,23 @@
 export type IRole = {
   id: number;
   name: UserRole;
-  __entity: "RoleEntity";
+  __entity: 'RoleEntity';
 };
 
 export enum UserRole {
-  ADMIN = "Admin",
-  USER = "User",
+  ADMIN = 'Admin',
+  USER = 'User',
 }
 
 export type IStatus = {
   id: number;
   name: UserStatus;
-  __entity: "StatusEntity";
+  __entity: 'StatusEntity';
 };
 
 export enum UserStatus {
-  ACTIVE = "Active",
-  INACTIVE = "Inactive",
+  ACTIVE = 'Active',
+  INACTIVE = 'Inactive',
 }
 
 export type IUser = {

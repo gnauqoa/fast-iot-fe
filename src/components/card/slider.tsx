@@ -1,4 +1,4 @@
-import { Card, Slider, Typography } from "antd";
+import { Card, Slider, Typography } from 'antd';
 
 interface SliderCardProps {
   title: string;
@@ -14,7 +14,7 @@ interface SliderCardProps {
 export const SliderCard: React.FC<SliderCardProps> = ({
   title,
   value,
-  unit = "",
+  unit = '',
   min = 0,
   max = 100,
   step = 1,

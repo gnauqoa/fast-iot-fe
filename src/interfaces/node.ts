@@ -1,3 +1,5 @@
+import { NodeTypes as ReactFlowNodeTypes } from '@xyflow/react';
+
 export enum NodeTypes {
   mux = 'mux',
   output = 'output',
@@ -27,3 +29,5 @@ export interface NodeAttribute {
   type: string;
   hidden?: boolean;
 }
+
+export const nodeList: ReactFlowNodeTypes = {};

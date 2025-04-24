@@ -56,7 +56,7 @@ export const TemplateModal = ({ template, open, onCancel, onSuccess }: TemplateM
         description: '',
       });
     }
-  }, [open, isEditMode, formProps.form]);
+  }, [open, isEditMode, formProps.form, template?.name, template?.description]);
 
   return (
     <Modal

@@ -16,5 +16,5 @@ export const hashCode = (str: string): number => {
 export const intToRGB = (i: number): string => {
   const c = (i & 0x00ffffff).toString(16).toUpperCase();
 
-  return "00000".substring(0, 6 - c.length) + c;
+  return '00000'.substring(0, 6 - c.length) + c;
 };

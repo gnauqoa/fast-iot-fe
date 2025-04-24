@@ -1,4 +1,4 @@
-import type { UploadFile } from "antd/lib/upload/interface";
+import type { UploadFile } from 'antd/lib/upload/interface';
 
 interface UploadResponse {
   fileUrl: string;
@@ -11,7 +11,7 @@ interface EventArgs<T = UploadResponse> {
 export const normalizeFile = (event: EventArgs) => {
   const { fileList } = event;
 
-  return fileList.map((item) => {
+  return fileList.map(item => {
     let { url } = item;
     const { uid, name, response, type, size, percent, status } = item;
 

@@ -1,13 +1,13 @@
-import { IUser } from "./user";
+import { IUser } from './user';
 
 export enum DeviceStatus {
-  Online = "online",
-  Offline = "offline",
+  Online = 'online',
+  Offline = 'offline',
 }
 
 export const statusColors: Record<DeviceStatus, string> = {
-  [DeviceStatus.Online]: "green",
-  [DeviceStatus.Offline]: "red",
+  [DeviceStatus.Online]: 'green',
+  [DeviceStatus.Offline]: 'red',
 };
 
 export interface PostGISPoint {

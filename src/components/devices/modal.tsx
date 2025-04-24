@@ -67,7 +67,7 @@ export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalPr
         userId: undefined,
       });
     }
-  }, [open, isEditMode, formProps.form]);
+  }, [open, isEditMode, formProps.form, device?.name, device?.userId]);
 
   return (
     <Modal

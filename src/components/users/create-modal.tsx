@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { useForm } from "@refinedev/antd";
-import { Modal, Button, Form, Input, Select, Tag } from "antd";
-import { IUser, UserRole, UserStatus } from "../../interfaces/user";
+import { useState } from 'react';
+import { useForm } from '@refinedev/antd';
+import { Modal, Button, Form, Input, Select, Tag } from 'antd';
+import { IUser, UserRole, UserStatus } from '@/interfaces/user';
 
 export const UserCreateModal = () => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -11,16 +11,17 @@ export const UserCreateModal = () => {
 
   // Màu sắc của Role và Status
   const roleColors: Record<UserRole, string> = {
-    [UserRole.ADMIN]: "gold",
-    [UserRole.USER]: "blue",
+    [UserRole.ADMIN]: 'gold',
+    [UserRole.USER]: 'blue',
   };
 
   const statusColors: Record<UserStatus, string> = {
-    [UserStatus.ACTIVE]: "green",
-    [UserStatus.INACTIVE]: "red",
+    [UserStatus.ACTIVE]: 'green',
+    [UserStatus.INACTIVE]: 'red',
   };
 
   // Xử lý submit form
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     onFinish({
       ...values,
@@ -55,10 +56,10 @@ export const UserCreateModal = () => {
           form={form}
           layout="vertical"
           initialValues={{
-            fullName: "",
-            email: "",
-            password: "",
-            confirmPassword: "",
+            fullName: '',
+            email: '',
+            password: '',
+            confirmPassword: '',
             role: UserRole.USER,
             status: UserStatus.ACTIVE,
           }}
@@ -68,7 +69,7 @@ export const UserCreateModal = () => {
           <Form.Item
             label="Full Name"
             name="fullName"
-            rules={[{ required: true, message: "Full Name is required" }]}
+            rules={[{ required: true, message: 'Full Name is required' }]}
           >
             <Input />
           </Form.Item>
@@ -78,8 +79,8 @@ export const UserCreateModal = () => {
             label="Email"
             name="email"
             rules={[
-              { required: true, message: "Email is required" },
-              { type: "email", message: "Enter a valid email" },
+              { required: true, message: 'Email is required' },
+              { type: 'email', message: 'Enter a valid email' },
             ]}
           >
             <Input />
@@ -90,8 +91,8 @@ export const UserCreateModal = () => {
             label="Password"
             name="password"
             rules={[
-              { required: true, message: "Password is required" },
-              { min: 6, message: "Password must be at least 6 characters" },
+              { required: true, message: 'Password is required' },
+              { min: 6, message: 'Password must be at least 6 characters' },
             ]}
           >
             <Input.Password />
@@ -101,15 +102,15 @@ export const UserCreateModal = () => {
           <Form.Item
             label="Confirm Password"
             name="confirmPassword"
-            dependencies={["password"]}
+            dependencies={['password']}
             rules={[
-              { required: true, message: "Please confirm your password" },
+              { required: true, message: 'Please confirm your password' },
               ({ getFieldValue }) => ({
                 validator(_, value) {
-                  if (!value || getFieldValue("password") === value) {
+                  if (!value || getFieldValue('password') === value) {
                     return Promise.resolve();
                   }
-                  return Promise.reject(new Error("Passwords do not match!"));
+                  return Promise.reject(new Error('Passwords do not match!'));
                 },
               }),
             ]}
@@ -121,10 +122,10 @@ export const UserCreateModal = () => {
           <Form.Item
             label="Role"
             name="role"
-            rules={[{ required: true, message: "Role is required" }]}
+            rules={[{ required: true, message: 'Role is required' }]}
           >
             <Select
-              options={Object.values(UserRole).map((role) => ({
+              options={Object.values(UserRole).map(role => ({
                 label: <Tag color={roleColors[role]}>{role}</Tag>,
                 value: role,
               }))}
@@ -135,10 +136,10 @@ export const UserCreateModal = () => {
           <Form.Item
             label="Status"
             name="status"
-            rules={[{ required: true, message: "Status is required" }]}
+            rules={[{ required: true, message: 'Status is required' }]}
           >
             <Select
-              options={Object.values(UserStatus).map((status) => ({
+              options={Object.values(UserStatus).map(status => ({
                 label: <Tag color={statusColors[status]}>{status}</Tag>,
                 value: status,
               }))}

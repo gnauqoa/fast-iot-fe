@@ -69,26 +69,15 @@ export type UseReactFlowReturnType = {
   ref: React.RefObject<HTMLDivElement>;
 };
 
-const useReactFlow = ({
-  nodes,
-  edges,
-  rfInstance,
-  viewport,
-  setViewport,
-  setNodes,
-  setEdges,
-  setRfInstance,
-}: {
-  nodes: Node[];
-  edges: Edge[];
-  rfInstance: ReactFlowInstance | null;
-  viewport: Viewport;
-
-  setViewport: Dispatch<SetStateAction<Viewport>>;
-  setNodes: Dispatch<SetStateAction<Node[]>>;
-  setEdges: Dispatch<SetStateAction<Edge[]>>;
-  setRfInstance: (instance: ReactFlowInstance) => void;
-}): UseReactFlowReturnType => {
+const useReactFlow = (): UseReactFlowReturnType => {
+  const [nodes, setNodes] = useState<Node[]>([]);
+  const [edges, setEdges] = useState<Edge[]>([]);
+  const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
+  const [viewport, setViewport] = useState<Viewport>({
+    x: 0,
+    y: 0,
+    zoom: 1,
+  });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
 
   const [menu, setMenu] = useState<{
