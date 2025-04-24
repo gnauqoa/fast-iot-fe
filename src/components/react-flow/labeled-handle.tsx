@@ -1,9 +1,7 @@
-'use client';
-
 import React from 'react';
-import { cn } from '@/lib/utils/tailwind';
 import { HandleProps } from '@xyflow/react';
 import { BaseHandle } from './base-handle';
+import { cn } from '@/utility/tailwind';
 
 const flexDirections = {
   top: 'flex-col',

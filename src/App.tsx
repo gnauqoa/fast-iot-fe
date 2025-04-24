@@ -29,121 +29,126 @@ import { DeviceList } from '@/pages/devices/list';
 import { websocketProvider } from '@/providers/liveProvider';
 import { Icon } from '@iconify/react';
 import { TemplateEdit, TemplateList, TemplateShow } from '@/pages/templates';
+import { ReactFlowProvider } from '@xyflow/react';
 
 const App: React.FC = () => {
   return (
     <ConfigProvider locale={{ locale: 'vi' }}>
-      <BrowserRouter>
-        <RefineKbarProvider>
-          <ColorModeContextProvider>
-            <Refine
-              liveProvider={websocketProvider}
-              dataProvider={dataProvider(API_URL, axiosInstance)}
-              routerProvider={routerBindings}
-              authProvider={authProvider}
-              accessControlProvider={accessControlProvider}
-              notificationProvider={notificationProvider}
-              options={{
-                disableTelemetry: true,
-                syncWithLocation: true,
-                warnWhenUnsavedChanges: true,
-              }}
-              resources={[
-                {
-                  name: 'devices',
-                  list: '/devices',
-                  edit: '/devices/edit/:id',
-                  show: '/devices/:id',
-                  meta: {
-                    canDelete: true,
-                    icon: <Icon icon="bitcoin-icons:node-hardware-filled" width="16" height="16" />,
+      <ReactFlowProvider>
+        <BrowserRouter>
+          <RefineKbarProvider>
+            <ColorModeContextProvider>
+              <Refine
+                liveProvider={websocketProvider}
+                dataProvider={dataProvider(API_URL, axiosInstance)}
+                routerProvider={routerBindings}
+                authProvider={authProvider}
+                accessControlProvider={accessControlProvider}
+                notificationProvider={notificationProvider}
+                options={{
+                  disableTelemetry: true,
+                  syncWithLocation: true,
+                  warnWhenUnsavedChanges: true,
+                }}
+                resources={[
+                  {
+                    name: 'devices',
+                    list: '/devices',
+                    edit: '/devices/edit/:id',
+                    show: '/devices/:id',
+                    meta: {
+                      canDelete: true,
+                      icon: (
+                        <Icon icon="bitcoin-icons:node-hardware-filled" width="16" height="16" />
+                      ),
+                    },
                   },
-                },
-                {
-                  name: 'templates',
-                  list: '/templates',
-                  edit: '/templates/edit/:id',
-                  show: '/templates/:id',
-                  meta: {
-                    canDelete: true,
-                    icon: <Icon icon="tabler:template" width="16" height="16" />,
+                  {
+                    name: 'templates',
+                    list: '/templates',
+                    edit: '/templates/edit/:id',
+                    show: '/templates/:id',
+                    meta: {
+                      canDelete: true,
+                      icon: <Icon icon="tabler:template" width="16" height="16" />,
+                    },
                   },
-                },
-                {
-                  name: 'devices-map',
-                  list: '/devices-map',
-                  meta: {
-                    canDelete: false,
-                    icon: <Icon icon="mdi:map-marker" width="16" height="16" />,
+                  {
+                    name: 'devices-map',
+                    list: '/devices-map',
+                    meta: {
+                      canDelete: false,
+                      icon: <Icon icon="mdi:map-marker" width="16" height="16" />,
+                    },
                   },
-                },
-                {
-                  name: 'users',
-                  list: '/users',
-                  create: '/users/create',
-                  edit: '/users/edit/:id',
-                  show: '/users/:id',
-                  meta: {
-                    canDelete: true,
-                    icon: <TeamOutlined style={{ fontSize: '16px' }} />,
+                  {
+                    name: 'users',
+                    list: '/users',
+                    create: '/users/create',
+                    edit: '/users/edit/:id',
+                    show: '/users/:id',
+                    meta: {
+                      canDelete: true,
+                      icon: <TeamOutlined style={{ fontSize: '16px' }} />,
+                    },
                   },
-                },
-              ]}
-            >
-              <Routes>
-                <Route
-                  element={
-                    <Authenticated
-                      key="autheticated-inner"
-                      fallback={<CatchAllNavigate to="/login" />}
-                    >
-                      <ThemedLayoutV2
-                        Title={({ collapsed }) => (
-                          <ThemedTitleV2
-                            collapsed={collapsed}
-                            icon={collapsed ? <AppLogo /> : <AppLogo />}
-                            text="Admin"
-                          />
-                        )}
-                        Header={() => <Header sticky />}
-                        Sider={props => <ThemedSiderV2 {...props} fixed />}
+                ]}
+              >
+                <Routes>
+                  <Route
+                    element={
+                      <Authenticated
+                        key="autheticated-inner"
+                        fallback={<CatchAllNavigate to="/login" />}
                       >
-                        <Outlet />
-                      </ThemedLayoutV2>
-                    </Authenticated>
-                  }
-                >
-                  <Route path="/" element={<Navigate to={'/devices'} />} />
-                  <Route path="/devices">
-                    <Route index element={<DeviceList />} />
-                    <Route path=":id" element={<DeviceShow />} />
+                        <ThemedLayoutV2
+                          Title={({ collapsed }) => (
+                            <ThemedTitleV2
+                              collapsed={collapsed}
+                              icon={collapsed ? <AppLogo /> : <AppLogo />}
+                              text="Admin"
+                            />
+                          )}
+                          Header={() => <Header sticky />}
+                          Sider={props => <ThemedSiderV2 {...props} fixed />}
+                        >
+                          <Outlet />
+                        </ThemedLayoutV2>
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/" element={<Navigate to={'/devices'} />} />
+                    <Route path="/devices">
+                      <Route index element={<DeviceList />} />
+                      <Route path=":id" element={<DeviceShow />} />
+                    </Route>
+                    <Route path="/templates">
+                      <Route index element={<TemplateList />} />
+                      <Route path=":id" element={<TemplateShow />} />
+                      <Route path="edit/:id" element={<TemplateEdit />} />
+                    </Route>
+                    <Route path="/devices-map" element={<DeviceMap />} />
+                    <Route path="/users">
+                      <Route index element={<UserList />} />
+                      <Route path="edit/:id" element={<UserEdit />} />
+                    </Route>
+                    <Route path="*" element={<ErrorComponent />} />
                   </Route>
-                  <Route path="/templates">
-                    <Route index element={<TemplateList />} />
-                    <Route path=":id" element={<TemplateShow />} />
-                    <Route path="edit/:id" element={<TemplateEdit />} />
+                  <Route
+                    element={
+                      <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+                        <NavigateToResource />
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/login" element={<Login />} />
                   </Route>
-                  <Route path="/devices-map" element={<DeviceMap />} />
-                  <Route path="/users">
-                    <Route index element={<UserList />} />
-                    <Route path="edit/:id" element={<UserEdit />} />
-                  </Route>
-                  <Route path="*" element={<ErrorComponent />} />
-                </Route>
-                <Route
-                  element={
-                    <Authenticated key="authenticated-outer" fallback={<Outlet />}>
-                      <NavigateToResource />
-                    </Authenticated>
-                  }
-                >
-                  <Route path="/login" element={<Login />} />
-                </Route>
-              </Routes>
-            </Refine>
-          </ColorModeContextProvider>
-        </RefineKbarProvider>
-      </BrowserRouter>
+                </Routes>
+              </Refine>
+            </ColorModeContextProvider>
+          </RefineKbarProvider>
+        </BrowserRouter>{' '}
+      </ReactFlowProvider>
     </ConfigProvider>
   );
 };

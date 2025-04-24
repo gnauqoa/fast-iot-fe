@@ -14,6 +14,7 @@ import { MapClickHandler, getUserLocation } from '@/utility/map';
 import { RightOutlined, LeftOutlined } from '@ant-design/icons';
 import { IDevice } from '@/interfaces/device';
 import { DeviceList } from '@/components/maps/list';
+import { capitalize } from '@/utility/text';
 
 export const DeviceMap = () => {
   const [userLocation, setUserLocation] = useState<[number, number]>([
@@ -155,7 +156,7 @@ export const DeviceMap = () => {
             style={{ marginLeft: 'auto' }}
             disabled={isPickingLocation}
           >
-            Scan
+            Find
           </Button>
           <Space>
             {' '}
@@ -257,9 +258,15 @@ export const DeviceMap = () => {
               >
                 <Popup>
                   <div>
-                    <h3>{device.name}</h3>
-                    <p>Status: {device.status}</p>
-                    <p>Last Update: {new Date(device.lastUpdate).toLocaleString()}</p>
+                    <p>
+                      {device.name}
+                      <span>
+                        <br /> Status: {capitalize(device.status)}
+                      </span>
+                      <span>
+                        <br /> Last Update: {new Date(device.lastUpdate).toLocaleString()}
+                      </span>
+                    </p>
                   </div>
                 </Popup>
               </Marker>
