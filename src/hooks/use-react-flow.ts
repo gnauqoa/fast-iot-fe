@@ -128,8 +128,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
 
   const onNewNode: OnNewNodeProps = useCallback(
     (type, position, data) => {
-      if (!rfInstance) return;
-
+      // if (!rfInstance) return;
       position = position || { x: 0, y: 0 };
 
       const newNode = {
@@ -144,7 +143,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
 
       setNodes(nds => [...nds, newNode]);
     },
-    [rfInstance, nodes]
+    [nodes]
   );
 
   const onNodesChange: OnNodesChange = useCallback(

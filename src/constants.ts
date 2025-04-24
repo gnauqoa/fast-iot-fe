@@ -12,3 +12,18 @@ export const LEAVE_DEVICE_ROOM_CHANNEL = 'leave_device_room';
 export const HANDLE_JOINED_DEVICE_ROOM_CHANNEL = 'joined_device_room';
 export const HANDLE_LEAVED_DEVICE_ROOM_CHANNEL = 'leaved_device_room';
 export const HANDLE_DEVICE_DATA_CHANNEL = 'device_data';
+
+export const NODE_CONSTANT = {
+  MUX: {
+    WIDTH: 120,
+    HEIGHT: 310,
+  },
+  OUTPUT: {
+    WIDTH: 103,
+    HEIGHT: 60,
+  },
+  RESET_OUTPUT: {
+    WIDTH: 103,
+    HEIGHT: 70,
+  },
+};

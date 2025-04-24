@@ -1,0 +1,49 @@
+import { memo } from 'react';
+import { Node, NodeProps } from '@xyflow/react';
+import { v4 as uuidv4 } from 'uuid';
+import { BaseNode } from './base';
+import { Typography } from 'antd';
+
+const { Title } = Typography;
+
+export type LabelNodeDataType = {
+  handleConnectedIds?: string[];
+  label: string;
+  value: string;
+};
+
+export type LabelNode = Node<LabelNodeDataType>;
+
+export const createLabelNode = (
+  { label, value }: LabelNodeDataType,
+  { position }: { position: { x: number; y: number } }
+) => {
+  return {
+    id: `label-${uuidv4()}`,
+    type: 'label',
+    data: {
+      label,
+      value,
+    },
+    position,
+  };
+};
+
+export const LabelNode = memo(({ data }: NodeProps<LabelNode>) => {
+  return (
+    <BaseNode
+      style={{
+        width: 200,
+        height: 100,
+        flexDirection: 'column',
+        display: 'flex',
+        justifyContent: 'space-between',
+      }}
+    >
+      <p className="text-foreground">{data.label}</p>
+      <Title level={3}>{data.value ?? 0}</Title>
+    </BaseNode>
+  );
+});
+
+LabelNode.displayName = 'LabelNode';

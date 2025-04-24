@@ -1,16 +1,6 @@
-import { NodeTypes as ReactFlowNodeTypes } from '@xyflow/react';
-
-export enum NodeTypes {
-  mux = 'mux',
-  output = 'output',
-  input = 'input',
-  buffer = 'buffer',
-  'clock-gate' = 'clock-gate',
-  'clock-div' = 'clock-div',
-  'pll-controller' = 'pll-controller',
-  'reset-src' = 'reset-src',
-  'reset-output' = 'reset-output',
-  'reset-mux' = 'reset-mux',
+export enum ENodeTypes {
+  'button' = 'button',
+  'label' = 'label',
 }
 
 export interface NodePropertiesProps {
@@ -29,5 +19,3 @@ export interface NodeAttribute {
   type: string;
   hidden?: boolean;
 }
-
-export const nodeList: ReactFlowNodeTypes = {};

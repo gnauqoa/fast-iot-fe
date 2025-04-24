@@ -1,5 +1,5 @@
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
+import { Input } from '@/components/radix/input';
+import { Label } from '@/components/radix/label';
 import React, { ChangeEventHandler } from 'react';
 
 const NumberProperty = ({

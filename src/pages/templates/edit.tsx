@@ -4,19 +4,13 @@ import { Controls } from '@xyflow/react';
 import NodeMenu from '@/components/react-flow/node-menu';
 import useReactFlow from '@/hooks/use-react-flow';
 import { ReactFlow } from '@xyflow/react';
-import { Button, Flex } from 'antd';
-import { nodeList } from '@/interfaces/node';
-import { Edit, useForm } from '@refinedev/antd';
-import { ITemplate } from '@/interfaces/template';
+import { Button } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
 import { useContext } from 'react';
 import { ColorModeContext } from '@/contexts/color-mode';
+import { nodeTypes } from '@/utility/node';
 
 export const TemplateEdit = () => {
-  const { formProps, saveButtonProps, query, onFinish } = useForm<ITemplate>({
-    mutationMode: 'optimistic',
-  });
-
   const { mode } = useContext(ColorModeContext);
 
   const {
@@ -35,6 +29,7 @@ export const TemplateEdit = () => {
     onPaneClick,
     ref,
     viewport,
+    onNewNode,
   } = useReactFlow();
 
   return (
@@ -59,7 +54,7 @@ export const TemplateEdit = () => {
             onNodeClick={onNodeClick}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}
-            nodeTypes={nodeList}
+            nodeTypes={nodeTypes}
             fitView
             attributionPosition="bottom-left"
           >
@@ -71,7 +66,7 @@ export const TemplateEdit = () => {
             </div>
           </ReactFlow>
         </ContextMenuTrigger>
-        <ReactFlowContextMenu />
+        <ReactFlowContextMenu onNewNode={onNewNode} />
       </ContextMenu>
     </div>
   );

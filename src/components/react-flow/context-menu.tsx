@@ -1,6 +1,7 @@
 import { Plus } from 'lucide-react';
 import {
   ContextMenuContent,
+  ContextMenuItem,
   ContextMenuSub,
   ContextMenuSubContent,
   ContextMenuSubTrigger,
@@ -11,7 +12,7 @@ export interface ReactFlowContextMenuProps {
   onNewNode: OnNewNodeProps;
 }
 
-export const ReactFlowContextMenu = () => {
+export const ReactFlowContextMenu = ({ onNewNode }: ReactFlowContextMenuProps) => {
   return (
     <ContextMenuContent className="w-64">
       <ContextMenuSub>
@@ -19,7 +20,36 @@ export const ReactFlowContextMenu = () => {
           <Plus className="absolute left-2 h-4 w-4" />
           Add
         </ContextMenuSubTrigger>
-        <ContextMenuSubContent className="w-48"> </ContextMenuSubContent>
+        <ContextMenuSubContent className="w-48">
+          <ContextMenuItem
+            onClick={() => {
+              onNewNode(
+                'button',
+                {
+                  x: 0,
+                  y: 0,
+                },
+                {}
+              );
+            }}
+          >
+            Button
+          </ContextMenuItem>
+          <ContextMenuItem
+            onClick={e => {
+              onNewNode(
+                'label',
+                {
+                  x: 0,
+                  y: 0,
+                },
+                {}
+              );
+            }}
+          >
+            Label
+          </ContextMenuItem>
+        </ContextMenuSubContent>
       </ContextMenuSub>
     </ContextMenuContent>
   );
