@@ -2,7 +2,7 @@ import { ContextMenu, ContextMenuTrigger } from '@/components/radix';
 import { Background, ColorMode } from '@xyflow/react';
 import { Controls } from '@xyflow/react';
 import NodeMenu from '@/components/react-flow/node-menu';
-import useReactFlow from '@/hooks/use-react-flow';
+import useReactFlow, { Mode } from '@/hooks/use-react-flow';
 import { ReactFlow } from '@xyflow/react';
 import { Button } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
@@ -41,7 +41,7 @@ export const TemplateEdit = () => {
     viewport,
     onNewNode,
     rfInstance,
-  } = useReactFlow();
+  } = useReactFlow({ mode: Mode.EDIT });
 
   // State to track initial diagram state and changes
   const [initialState, setInitialState] = useState<{
@@ -97,15 +97,11 @@ export const TemplateEdit = () => {
   };
 
   return (
-    <div
-      style={{ height: `calc(100vh - ${150}px)` }}
-      className="relative flex w-full flex-col bg-[#fff]"
-    >
+    <div style={{ height: `calc(100vh - ${150}px)` }} className="relative flex w-full flex-col">
       <NodeMenu onNodeChange={onNodesChange} node={selectedNode} />
       <ContextMenu>
         <ContextMenuTrigger className="flex h-full w-full">
           <ReactFlow
-            colorMode={mode as ColorMode}
             ref={ref}
             onViewportChange={onViewportChange}
             viewport={viewport}
@@ -115,6 +111,7 @@ export const TemplateEdit = () => {
             nodes={nodes}
             edges={edges}
             onNodesChange={onNodesChange}
+            colorMode={mode as ColorMode}
             onNodeClick={onNodeClick}
             onEdgesChange={onEdgesChange}
             onConnect={onConnect}

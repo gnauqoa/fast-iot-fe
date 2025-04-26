@@ -1,6 +1,9 @@
 import { ReactNode } from 'react';
 import { Node, OnNodesChange } from '@xyflow/react';
 import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/radix/tabs';
+import { getNodeProperties } from '@/utility/node';
+import { ENodeTypes } from '@/interfaces/node';
+import { cn } from '@/utility/tailwind';
 
 export type NodeMenuProps = {
   node?: Node | null;
@@ -9,38 +12,41 @@ export type NodeMenuProps = {
 
 export type NodeMenuType = (props: NodeMenuProps) => ReactNode;
 
-const NodeMenu: NodeMenuType = ({ node }) => {
+const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
   const open = !!node;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  // const handleDataChange = (key: string, value: any) => {
-  //   if (!node) return;
+  const NodeProperties = node?.type ? getNodeProperties(node.type as ENodeTypes) : null;
 
-  //   onNodeChange([
-  //     {
-  //       id: node.id,
-  //       type: 'replace',
-  //       item: {
-  //         ...node,
-  //         data: {
-  //           ...node.data,
-  //           [key]: value,
-  //         },
-  //       },
-  //     },
-  //   ]);
-  // };
+  const handleDataChange = (key: string, value: any) => {
+    if (!node) return;
+
+    onNodeChange([
+      {
+        id: node.id,
+        type: 'replace',
+        item: {
+          ...node,
+          data: {
+            ...node.data,
+            [key]: value,
+          },
+        },
+      },
+    ]);
+  };
 
   if (!open) return <></>;
 
   return (
-    <div className="absolute right-0 z-20 flex h-[100vh] w-[20%] flex-col bg-background shadow-xl">
-      <Tabs defaultValue="properties" className="w-full">
+    <div className={cn('absolute right-0 z-20 flex h-[100vh] w-[20%] flex-col bg-card shadow-xl')}>
+      <Tabs defaultValue="properties" className="w-full b-">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="properties">Properties</TabsTrigger>
           <TabsTrigger value="style">Styles</TabsTrigger>
         </TabsList>
-        <TabsContent value="properties"></TabsContent>
+        <TabsContent value="properties">
+          {NodeProperties && <NodeProperties data={node?.data} onDataChange={handleDataChange} />}
+        </TabsContent>
         <TabsContent value="style"></TabsContent>
       </Tabs>
     </div>

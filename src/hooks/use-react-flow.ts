@@ -14,6 +14,12 @@ import {
 } from '@xyflow/react';
 import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 
+export enum Mode {
+  EDIT = 1,
+  VIEW = 0,
+  CONTROL = 2,
+}
+
 export type OnNewNodeProps = (
   type: string,
   position?: { x: number; y: number },
@@ -69,7 +75,11 @@ export type UseReactFlowReturnType = {
   ref: React.RefObject<HTMLDivElement>;
 };
 
-const useReactFlow = (): UseReactFlowReturnType => {
+const useReactFlow = ({
+  mode = Mode.EDIT,
+}: {
+  mode?: Mode | undefined;
+}): UseReactFlowReturnType => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
@@ -147,8 +157,15 @@ const useReactFlow = (): UseReactFlowReturnType => {
   );
 
   const onNodesChange: OnNodesChange = useCallback(
-    changes => setNodes(nds => applyNodeChanges(changes, nds)),
-    [setNodes]
+    changes => {
+      setNodes(nds =>
+        applyNodeChanges(
+          mode === Mode.CONTROL ? changes.filter(change => change.type !== 'position') : changes,
+          nds
+        )
+      );
+    },
+    [setNodes, mode]
   );
   const onEdgesChange: OnEdgesChange = useCallback(
     changes => setEdges(eds => applyEdgeChanges(changes, eds)),
@@ -210,7 +227,6 @@ const useReactFlow = (): UseReactFlowReturnType => {
           ...node,
           data: {
             ...node.data,
-            handleConnectedIds: getHandleConnectedId(node.id, edges),
           },
         };
       })

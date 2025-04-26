@@ -5,14 +5,16 @@ import { BaseNode } from './base';
 import { Switch } from 'antd';
 
 export type ButtonNodeDataType = {
-  handleConnectedIds?: string[];
   label: string;
+  channel: string;
+  value?: any;
+  onChange?: (name: string, value: any) => void;
 };
 
 export type ButtonNode = Node<ButtonNodeDataType>;
 
 export const createButtonNode = (
-  { label }: ButtonNodeDataType,
+  { label, channel, value }: ButtonNodeDataType,
   { position }: { position: { x: number; y: number } }
 ) => {
   return {
@@ -20,6 +22,8 @@ export const createButtonNode = (
     type: 'button',
     data: {
       label,
+      channel,
+      value,
     },
     position,
   };
@@ -36,9 +40,16 @@ export const ButtonNode = memo(({ data }: NodeProps<ButtonNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">{data.label}</p>
+      <p className="text-foreground">
+        {data.label} [{data.channel}]
+      </p>
       <div>
-        <Switch />
+        <Switch
+          value={Boolean(data?.value)}
+          onChange={checked => {
+            data.onChange?.(data.channel, checked ? true : false);
+          }}
+        />
       </div>
     </BaseNode>
   );

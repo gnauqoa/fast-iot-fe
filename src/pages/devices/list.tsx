@@ -49,7 +49,7 @@ export const DeviceList = () => {
 
   const handleDeviceUpdate = (updatedDevice: IDevice) => {
     setDevices(prevDevices =>
-      prevDevices.map(d => (d.id === updatedDevice.id ? updatedDevice : d))
+      prevDevices.map(d => (d.id === updatedDevice.id ? { ...updatedDevice, ...d } : d))
     );
   };
 
@@ -134,7 +134,7 @@ export const DeviceList = () => {
         <Table.Column
           title="Template"
           render={(val, record: IDevice) => (
-            <Link to={`/templates/${record.id}`}>{record.name}</Link>
+            <Link to={`/templates/edit/${record.template?.id}`}>{record.template?.name}</Link>
           )}
           dataIndex={['template', 'name', 'id']}
           key="template"

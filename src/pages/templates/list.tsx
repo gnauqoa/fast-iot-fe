@@ -2,7 +2,7 @@ import { Table, Input, Button, Form, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useState } from 'react';
 import { ITemplate } from '@/interfaces/template'; // Import the Template interface
-import { DeleteButton, EditButton, ShowButton, useTable } from '@refinedev/antd';
+import { DeleteButton, EditButton, useTable } from '@refinedev/antd';
 import { CrudFilters } from '@refinedev/core';
 import { TemplateModal } from '@/components/templates';
 
@@ -71,7 +71,6 @@ export const TemplateList = () => {
           render={(_, record: ITemplate) => (
             <Space>
               <EditButton hideText size="small" recordItemId={record.id} />
-              <ShowButton hideText size="small" recordItemId={record.id} />
               <DeleteButton hideText size="small" recordItemId={record.id} />
             </Space>
           )}

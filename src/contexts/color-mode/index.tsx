@@ -18,6 +18,12 @@ export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({ children
 
   useEffect(() => {
     window.localStorage.setItem('colorMode', mode);
+
+    if (mode === 'dark') {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
   }, [mode]);
 
   const setColorMode = () => {

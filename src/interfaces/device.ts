@@ -1,3 +1,4 @@
+import { ITemplate } from './template';
 import { IUser } from './user';
 
 export enum DeviceStatus {
@@ -14,6 +15,12 @@ export interface PostGISPoint {
   type: string;
   coordinates: [number, number];
 }
+export interface IChannel {
+  name: string;
+  value?: any;
+  unit: string;
+  type: string;
+}
 
 export interface IDevice {
   id: number;
@@ -22,6 +29,8 @@ export interface IDevice {
   status: DeviceStatus;
   position: PostGISPoint;
   user: IUser;
+  template: ITemplate;
+  channels: IChannel[];
   userId: number;
   createdAt: Date;
   updatedAt: Date;

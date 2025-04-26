@@ -7,7 +7,6 @@ import { Typography } from 'antd';
 const { Title } = Typography;
 
 export type LabelNodeDataType = {
-  handleConnectedIds?: string[];
   label: string;
   value: string;
 };
