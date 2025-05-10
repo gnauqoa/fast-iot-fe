@@ -158,12 +158,13 @@ const useReactFlow = ({
 
   const onNodesChange: OnNodesChange = useCallback(
     changes => {
-      setNodes(nds =>
-        applyNodeChanges(
+      setNodes(nds => {
+        console.log({ nds });
+        return applyNodeChanges(
           mode === Mode.CONTROL ? changes.filter(change => change.type !== 'position') : changes,
           nds
-        )
-      );
+        );
+      });
     },
     [setNodes, mode]
   );

@@ -50,6 +50,10 @@ export const DeviceShow = () => {
     viewport,
   } = useReactFlow({ mode: Mode.CONTROL });
 
+  useEffect(() => {
+    console.log({ nodes, edges, viewport });
+  }, [nodes, edges, viewport]);
+
   // Handle real-time channel value change
   const handleChannelChange = useCallback(
     (name: string, value: string | number | boolean | object) => {
@@ -120,9 +124,9 @@ export const DeviceShow = () => {
 
   // Map device channels to nodes for visualization
   useEffect(() => {
-    if (!record?.template?.prototype) return;
+    if (!record?.template?.desktopPrototype) return;
 
-    const nodesWithValues = (record.template.prototype.nodes || []).map(node => ({
+    const nodesWithValues = (record.template.desktopPrototype.nodes || []).map(node => ({
       ...node,
       data: {
         ...node.data,
@@ -131,8 +135,10 @@ export const DeviceShow = () => {
       },
     }));
 
+    console.log({ nodesWithValues });
+
     setNodes(nodesWithValues);
-    setEdges(record.template.prototype.edges || []);
+    setEdges(record.template.desktopPrototype.edges || []);
   }, [record, device?.channels, handleChannelChange, setNodes, setEdges]);
 
   if (!device) return null;

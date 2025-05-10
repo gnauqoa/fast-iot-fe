@@ -8,10 +8,11 @@ import { Button } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
 import { useContext, useEffect, useState } from 'react';
 import { ColorModeContext } from '@/contexts/color-mode';
-import { nodeTypes } from '@/utility/node';
+import { nodeTypes, nodeTypeToChannelType } from '@/utility/node';
 import { useForm } from '@refinedev/core';
 import { ITemplate } from '@/interfaces/template';
 import isEqual from 'lodash/isEqual';
+import { ENodeTypes } from '@/interfaces/node';
 
 export const TemplateEdit = () => {
   const { onFinish, query } = useForm<ITemplate>({
@@ -51,9 +52,9 @@ export const TemplateEdit = () => {
   const [hasChanges, setHasChanges] = useState(false);
 
   useEffect(() => {
-    if (templateData?.prototype) {
-      const newNodes = templateData.prototype?.nodes || [];
-      const newEdges = templateData.prototype?.edges || [];
+    if (templateData?.desktopPrototype) {
+      const newNodes = templateData.desktopPrototype?.nodes || [];
+      const newEdges = templateData.desktopPrototype?.edges || [];
 
       setInitialState({
         nodes: newNodes,
@@ -78,8 +79,20 @@ export const TemplateEdit = () => {
     if (!data) return;
     const { x, y, zoom } = data.viewport || {};
 
+    const channels = data?.nodes.map(node => ({
+      name: node.data.channel,
+      type: nodeTypeToChannelType(node.type as ENodeTypes),
+    }));
+
+    console.log({ nodes: data?.nodes });
+
+    const newChannels = [...(templateData?.channels || []), ...channels].filter(
+      (channel, index, self) =>
+        index === self.findIndex(c => c.name === channel.name) && channel?.name
+    );
+
     onFinish({
-      prototype: {
+      desktopPrototype: {
         nodes: data?.nodes,
         edges: data?.edges,
         viewport: {
@@ -88,7 +101,8 @@ export const TemplateEdit = () => {
           zoom,
         },
       },
-    });
+      channels: newChannels,
+    } as Partial<ITemplate>);
 
     setInitialState({
       nodes: data.nodes,

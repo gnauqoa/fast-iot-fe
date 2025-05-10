@@ -3,10 +3,12 @@ import { Node, NodeProps } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseNode } from './base';
 import { Switch } from 'antd';
+import { ChannelType } from '@/interfaces/template';
 
 export type ButtonNodeDataType = {
   label: string;
   channel: string;
+  channelType: ChannelType;
   value?: any;
   onChange?: (name: string, value: any) => void;
 };
@@ -24,6 +26,7 @@ export const createButtonNode = (
       label,
       channel,
       value,
+      channelType: ChannelType.BOOLEAN,
     },
     position,
   };
