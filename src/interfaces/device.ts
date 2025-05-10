@@ -15,11 +15,16 @@ export interface PostGISPoint {
   type: string;
   coordinates: [number, number];
 }
-export interface IChannel {
+
+export type IChannelValue = string | number | boolean | object;
+
+export interface IChannel extends Record<string, any> {
+  id: string;
+  deviceId: number;
   name: string;
-  value?: any;
-  unit: string;
-  type: string;
+  value: IChannelValue;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 export interface IDevice {
