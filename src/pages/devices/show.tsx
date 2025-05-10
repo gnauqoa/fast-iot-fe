@@ -50,16 +50,12 @@ export const DeviceShow = () => {
     viewport,
   } = useReactFlow({ mode: Mode.CONTROL });
 
-  useEffect(() => {
-    console.log({ nodes, edges, viewport });
-  }, [nodes, edges, viewport]);
-
   // Handle real-time channel value change
   const handleChannelChange = useCallback(
     (name: string, value: string | number | boolean | object) => {
       if (!device || !record?.id) return;
 
-      const channelIndex = device.channels.findIndex(ch => ch.name === name);
+      const channelIndex = device.template.channels.findIndex(ch => ch.name === name);
       if (channelIndex === -1) return;
 
       const updatedChannels = [...device.channels];
@@ -134,8 +130,6 @@ export const DeviceShow = () => {
         onChange: handleChannelChange,
       },
     }));
-
-    console.log({ nodesWithValues });
 
     setNodes(nodesWithValues);
     setEdges(record.template.desktopPrototype.edges || []);

@@ -84,8 +84,6 @@ export const TemplateEdit = () => {
       type: nodeTypeToChannelType(node.type as ENodeTypes),
     }));
 
-    console.log({ nodes: data?.nodes });
-
     const newChannels = [...(templateData?.channels || []), ...channels].filter(
       (channel, index, self) =>
         index === self.findIndex(c => c.name === channel.name) && channel?.name
