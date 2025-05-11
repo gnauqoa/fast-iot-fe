@@ -1,5 +1,5 @@
 import { NodePropertiesType } from '@/interfaces/node';
-import StringProperty from '../node-menu/properties/string';
+import StringProperty from '../../node-menu/properties/string';
 
 export const ButtonProperties: NodePropertiesType = ({ data, onDataChange }) => {
   return (

@@ -6,7 +6,6 @@ import { EyeOutlined } from '@ant-design/icons';
 import { Background, ColorMode, Controls, ReactFlow } from '@xyflow/react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
-
 import { DeviceStatus, IDevice } from '@/interfaces/device';
 import { socket } from '@/providers/liveProvider';
 import { capitalize } from '@/utility/text';
@@ -62,7 +61,6 @@ export const DeviceShow = () => {
       updatedChannels[channelIndex] = {
         ...updatedChannels[channelIndex],
         value,
-        updatedAt: new Date(),
       };
 
       const updatedDevice = {

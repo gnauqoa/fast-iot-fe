@@ -1,7 +1,7 @@
 import { memo } from 'react';
 import { Node, NodeProps } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
-import { BaseNode } from './base';
+import { BaseNode } from '../base';
 import { Typography } from 'antd';
 
 const { Title } = Typography;
@@ -9,6 +9,7 @@ const { Title } = Typography;
 export type LabelNodeDataType = {
   label: string;
   value: string;
+  channel: string;
 };
 
 export type LabelNode = Node<LabelNodeDataType>;
@@ -39,7 +40,9 @@ export const LabelNode = memo(({ data }: NodeProps<LabelNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">{data.label}</p>
+      <p className="text-foreground">
+        {data.label} [{data.channel}]
+      </p>
       <Title level={3}>{data.value ?? 0}</Title>
     </BaseNode>
   );
