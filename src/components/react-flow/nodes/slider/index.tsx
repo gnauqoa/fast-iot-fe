@@ -43,7 +43,7 @@ export const createSliderNode = (
 };
 
 export const SliderNode = memo(({ data }: NodeProps<ISliderNode>) => {
-  const [currentValue, setCurrentValue] = useState(data.value ?? data.min ?? 0);
+  const [currentValue, setCurrentValue] = useState(Number(data.value) ?? data.min ?? 0);
 
   return (
     <BaseNode
