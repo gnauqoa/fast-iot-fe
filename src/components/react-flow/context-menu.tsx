@@ -49,6 +49,13 @@ export const ReactFlowContextMenu = ({ onNewNode }: ReactFlowContextMenuProps) =
           >
             Label
           </ContextMenuItem>
+          <ContextMenuItem
+            onClick={() => {
+              onNewNode('slider', { x: 0, y: 0 }, {});
+            }}
+          >
+            Slider
+          </ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
     </ContextMenuContent>

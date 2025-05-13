@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useShow } from '@refinedev/core';
 import { Show } from '@refinedev/antd';
-import { Badge, Button, Flex, message, Typography } from 'antd';
+import { Badge, Button, Flex, message, Slider, Typography } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { Background, ColorMode, Controls, ReactFlow } from '@xyflow/react';
 import dayjs from 'dayjs';
@@ -131,14 +131,13 @@ export const DeviceShow = () => {
 
     setNodes(nodesWithValues);
     setEdges(record.template.desktopPrototype.edges || []);
-  }, [record, device?.channels, handleChannelChange, setNodes, setEdges]);
+  }, [record, device?.channels, handleChannelChange, setNodes, setEdges, viewport]);
 
   if (!device) return null;
 
   return (
     <Show isLoading={isLoading}>
       <Flex vertical gap={12}>
-        {/* Device Info Header */}
         <Flex gap={12} align="center">
           <Title level={3} style={{ marginBottom: 0 }}>
             {device.name}
@@ -191,7 +190,11 @@ export const DeviceShow = () => {
       {/* React Flow Graph */}
       <div className="flex flex-col w-full h-[50vh] relative">
         <ReactFlow
+          nodesDraggable={false}
+          nodesConnectable={false}
+          elementsSelectable={false}
           ref={ref}
+          noPanClassName="nopan"
           colorMode={mode as ColorMode}
           nodes={nodes}
           edges={edges}

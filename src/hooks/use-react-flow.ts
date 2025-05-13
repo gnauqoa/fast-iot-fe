@@ -73,6 +73,7 @@ export type UseReactFlowReturnType = {
   onCloseMenu: () => void;
   onNewNode: OnNewNodeProps;
   ref: React.RefObject<HTMLDivElement>;
+  setViewport: Dispatch<SetStateAction<Viewport>>;
 };
 
 const useReactFlow = ({
@@ -256,6 +257,7 @@ const useReactFlow = ({
     onCloseMenu,
     onNewNode,
     ref,
+    setViewport,
   };
 };
 

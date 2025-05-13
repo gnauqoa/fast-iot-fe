@@ -1,6 +1,7 @@
 export enum ENodeTypes {
   'button' = 'button',
   'label' = 'label',
+  'slider' = 'slider',
 }
 
 export interface NodePropertiesProps {
