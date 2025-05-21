@@ -76,11 +76,7 @@ export type UseReactFlowReturnType = {
   setViewport: Dispatch<SetStateAction<Viewport>>;
 };
 
-const useReactFlow = ({
-  mode = Mode.EDIT,
-}: {
-  mode?: Mode | undefined;
-}): UseReactFlowReturnType => {
+const useReactFlow = (): UseReactFlowReturnType => {
   const [nodes, setNodes] = useState<Node[]>([]);
   const [edges, setEdges] = useState<Edge[]>([]);
   const [rfInstance, setRfInstance] = useState<ReactFlowInstance | null>(null);
@@ -159,14 +155,9 @@ const useReactFlow = ({
 
   const onNodesChange: OnNodesChange = useCallback(
     changes => {
-      setNodes(nds =>
-        applyNodeChanges(
-          mode === Mode.CONTROL ? changes.filter(change => change.type !== 'position') : changes,
-          nds
-        )
-      );
+      setNodes(nds => applyNodeChanges(changes, nds));
     },
-    [setNodes, mode]
+    [setNodes]
   );
   const onEdgesChange: OnEdgesChange = useCallback(
     changes => setEdges(eds => applyEdgeChanges(changes, eds)),

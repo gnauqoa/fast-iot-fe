@@ -47,29 +47,51 @@ export const DeviceShow = () => {
     onPaneClick,
     ref,
     viewport,
-  } = useReactFlow({ mode: Mode.CONTROL });
+  } = useReactFlow();
+
+  const handleDeviceChange = useCallback(
+    (updated: IDevice) => {
+      setDevice(prev => ({ ...prev, ...updated }));
+      if (!record?.template?.desktopPrototype) return;
+      const nodesWithValues = (record.template.desktopPrototype.nodes || []).map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          value: device?.channels.find(ch => ch.name === node.data.channel)?.value,
+          onChange: handleChannelChange,
+        },
+      }));
+
+      setNodes(nodesWithValues);
+      setEdges(record.template.desktopPrototype.edges || []);
+    },
+    [device, record?.template?.desktopPrototype]
+  );
 
   // Handle real-time channel value change
   const handleChannelChange = useCallback(
     (name: string, value: string | number | boolean | object) => {
       if (!device || !record?.id) return;
+      const channelPrototype = device.template.channels.find(ch => ch.name === name);
+      if (!channelPrototype) return;
 
-      const channelIndex = device.template.channels.findIndex(ch => ch.name === name);
-      if (channelIndex === -1) return;
+      const currentChannelData = device.channels.find(ch => ch.name === name);
+      if (!currentChannelData) {
+        const newChannel = {
+          name,
+          value,
+        };
 
-      const updatedChannels = [...device.channels];
-      updatedChannels[channelIndex] = {
-        ...updatedChannels[channelIndex],
-        value,
-      };
-
-      const updatedDevice = {
-        ...device,
-        channels: updatedChannels,
-      };
-
-      setDevice(updatedDevice);
-
+        handleDeviceChange({
+          ...device,
+          channels: [...device.channels, newChannel],
+        });
+      } else {
+        handleDeviceChange({
+          ...device,
+          channels: device.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
+        });
+      }
       socket.emit('device/update', {
         id: record.id,
         channelName: name,
@@ -106,7 +128,7 @@ export const DeviceShow = () => {
   useEffect(() => {
     if (!record) return;
 
-    setDevice(record);
+    setDevice(prev => ({ ...prev, ...record }));
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
     socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
 
@@ -116,24 +138,7 @@ export const DeviceShow = () => {
     };
   }, [record, handleDeviceUpdate]);
 
-  // Map device channels to nodes for visualization
-  useEffect(() => {
-    if (!record?.template?.desktopPrototype) return;
-
-    const nodesWithValues = (record.template.desktopPrototype.nodes || []).map(node => ({
-      ...node,
-      data: {
-        ...node.data,
-        value: device?.channels.find(ch => ch.name === node.data.channel)?.value,
-        onChange: handleChannelChange,
-      },
-    }));
-
-    setNodes(nodesWithValues);
-    setEdges(record.template.desktopPrototype.edges || []);
-  }, [record, device?.channels, handleChannelChange, setNodes, setEdges, viewport]);
-
-  if (!device) return null;
+  if (!device) return <></>;
 
   return (
     <Show isLoading={isLoading}>
