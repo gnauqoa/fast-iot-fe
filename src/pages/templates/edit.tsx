@@ -18,6 +18,7 @@ import {
   DraggableLabelNode,
   DraggableSliderNode,
 } from '@/components/react-flow/nodes';
+import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
 
 export const TemplateEdit = () => {
   const { onFinish, query } = useForm<ITemplate>({
@@ -52,6 +53,10 @@ export const TemplateEdit = () => {
     onDragOver,
     onDrop,
     menu,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   } = useReactFlow();
 
   // State to track initial diagram state and changes
@@ -156,7 +161,19 @@ export const TemplateEdit = () => {
               <Background />
               <Controls />
               <div className="absolute right-[32px] z-20 mt-5 flex flex-row items-center gap-3">
-                <Button onClick={handleSave} disabled={!hasChanges}>
+                <Button
+                  icon={<UndoOutlined />}
+                  onClick={undo}
+                  disabled={!canUndo}
+                  title="Undo (Ctrl+Z)"
+                />
+                <Button
+                  icon={<RedoOutlined />}
+                  onClick={redo}
+                  disabled={!canRedo}
+                  title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
+                />
+                <Button type="primary" onClick={handleSave} disabled={!hasChanges}>
                   Save
                 </Button>
               </div>

@@ -36,6 +36,12 @@ export type OnNewNodeProps = (
   data?: any
 ) => void;
 
+// Define history state type
+type HistoryState = {
+  nodes: Node[];
+  edges: Edge[];
+};
+
 export const getHandleConnectedId = (nodeId: string, edges: Edge[]) => {
   const _edges = edges.filter(e => e.source === nodeId || e.target === nodeId);
 
@@ -89,6 +95,10 @@ export type UseReactFlowReturnType = {
   onDragStart: (event: React.DragEvent<HTMLDivElement>, nodeType: string) => void;
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
   onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
+  undo: () => void;
+  redo: () => void;
+  canUndo: boolean;
+  canRedo: boolean;
 };
 
 const useReactFlow = (): UseReactFlowReturnType => {
@@ -112,9 +122,76 @@ const useReactFlow = (): UseReactFlowReturnType => {
   } | null>(null);
   const [nodeDraggingType, setNodeDraggingType] = useState<string | null>(null);
 
+  const [past, setPast] = useState<HistoryState[]>([]);
+  const [future, setFuture] = useState<HistoryState[]>([]);
+  const ignoringChanges = useRef(false);
+
   const selectedNode = nodes ? nodes.find(node => node.id === selectedNodeId) : null;
 
   const ref = useRef<HTMLDivElement | null>(null);
+
+  const canUndo = past.length > 0;
+  const canRedo = future.length > 0;
+
+  const captureCurrentState = useCallback(() => {
+    return {
+      nodes: [...nodes],
+      edges: [...edges],
+    };
+  }, [nodes, edges]);
+
+  const addToHistory = useCallback(() => {
+    if (ignoringChanges.current) return;
+
+    setPast(prevPast => [...prevPast, captureCurrentState()]);
+    setFuture([]);
+  }, [captureCurrentState]);
+
+  const undo = useCallback(() => {
+    if (!canUndo) return;
+
+    const previousState = past[past.length - 1];
+    const newPast = past.slice(0, past.length - 1);
+
+    // Prevent this state change from being added to history
+    ignoringChanges.current = true;
+
+    // Set current state to nodes/edges from previous state
+    setNodes(previousState.nodes);
+    setEdges(previousState.edges);
+
+    // Update past and future arrays
+    setPast(newPast);
+    setFuture(prevFuture => [captureCurrentState(), ...prevFuture]);
+
+    // Allow changes to be added to history again
+    setTimeout(() => {
+      ignoringChanges.current = false;
+    }, 0);
+  }, [past, captureCurrentState, canUndo, setNodes, setEdges]);
+
+  const redo = useCallback(() => {
+    if (!canRedo) return;
+
+    const nextState = future[0];
+    const newFuture = future.slice(1);
+
+    // Prevent this state change from being added to history
+    ignoringChanges.current = true;
+
+    // Set current state to nodes/edges from next state
+    setNodes(nextState.nodes);
+    setEdges(nextState.edges);
+
+    // Update past and future arrays
+    setPast(prevPast => [...prevPast, captureCurrentState()]);
+    setFuture(newFuture);
+
+    // Allow changes to be added to history again
+    setTimeout(() => {
+      ignoringChanges.current = false;
+    }, 0);
+  }, [future, captureCurrentState, canRedo, setNodes, setEdges]);
 
   const onNodeClick = useCallback(
     (event: React.MouseEvent, node: Node) => {
@@ -159,7 +236,9 @@ const useReactFlow = (): UseReactFlowReturnType => {
 
   const onNewNode: OnNewNodeProps = useCallback(
     (type, position, data) => {
-      // if (!rfInstance) return;
+      // Add to history before making changes
+      addToHistory();
+
       position = position || { x: 0, y: 0 };
 
       const newNode = {
@@ -174,7 +253,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
 
       setNodes(nds => [...nds, newNode]);
     },
-    [nodes]
+    [nodes, addToHistory]
   );
 
   const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
@@ -207,17 +286,45 @@ const useReactFlow = (): UseReactFlowReturnType => {
 
   const onNodesChange: OnNodesChange = useCallback(
     changes => {
+      // Track significant changes to the flow for undo/redo history:
+      // 1. Node removals - when user deletes a node
+      // 2. Position changes - but only when the dragging ends to avoid storing intermediate states
+      // 3. Selection changes are not tracked in history
+      const shouldAddToHistory = changes.some(
+        change =>
+          // When nodes are removed
+          change.type === 'remove' ||
+          // When position changes and drag is complete (not during dragging)
+          (change.type === 'position' && change.dragging === false && change.position)
+      );
+
+      if (shouldAddToHistory && !ignoringChanges.current) {
+        addToHistory();
+      }
+
       setNodes(nds => applyNodeChanges(changes, nds));
     },
-    [setNodes]
+    [setNodes, addToHistory]
   );
+
   const onEdgesChange: OnEdgesChange = useCallback(
-    changes => setEdges(eds => applyEdgeChanges(changes, eds)),
-    [setEdges]
+    changes => {
+      // Add to history for edge removals
+      if (changes.some(change => change.type === 'remove') && !ignoringChanges.current) {
+        addToHistory();
+      }
+
+      setEdges(eds => applyEdgeChanges(changes, eds));
+    },
+    [setEdges, addToHistory]
   );
+
   const onConnect: OnConnect = useCallback(
-    connection => setEdges(eds => addEdge(connection, eds)),
-    [setEdges]
+    connection => {
+      addToHistory();
+      setEdges(eds => addEdge(connection, eds));
+    },
+    [setEdges, addToHistory]
   );
 
   const onViewportChange = useCallback(
@@ -251,6 +358,10 @@ const useReactFlow = (): UseReactFlowReturnType => {
         const flow = JSON.parse(text);
 
         if (flow) {
+          // Clear history when restoring a saved flow
+          setPast([]);
+          setFuture([]);
+
           const { x = 0, y = 0, zoom = 1 } = flow.viewport || {};
           setNodes(flow.nodes || []);
           setEdges(flow.edges || []);
@@ -276,6 +387,34 @@ const useReactFlow = (): UseReactFlowReturnType => {
       })
     );
   }, [edges]);
+
+  // Add keyboard shortcuts for undo/redo
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Check for undo: Ctrl+Z or Command+Z (Mac)
+      if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
+        event.preventDefault();
+        if (canUndo) undo();
+      }
+
+      // Check for redo: Ctrl+Y or Ctrl+Shift+Z or Command+Shift+Z (Mac)
+      if (
+        ((event.ctrlKey || event.metaKey) && event.key === 'y') ||
+        ((event.ctrlKey || event.metaKey) && event.shiftKey && event.key === 'z')
+      ) {
+        event.preventDefault();
+        if (canRedo) redo();
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Remove event listener on cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [undo, redo, canUndo, canRedo]);
 
   return {
     nodes,
@@ -306,6 +445,10 @@ const useReactFlow = (): UseReactFlowReturnType => {
     onDragStart,
     onDragOver,
     onDrop,
+    undo,
+    redo,
+    canUndo,
+    canRedo,
   };
 };
 
