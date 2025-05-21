@@ -4,7 +4,7 @@ import { Controls } from '@xyflow/react';
 import NodeMenu from '@/components/react-flow/node-menu';
 import useReactFlow, { Mode } from '@/hooks/use-react-flow';
 import { ReactFlow } from '@xyflow/react';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
 import { DragEventHandler, useContext, useEffect, useState } from 'react';
 import { ColorModeContext } from '@/contexts/color-mode';
@@ -18,7 +18,7 @@ import {
   DraggableLabelNode,
   DraggableSliderNode,
 } from '@/components/react-flow/nodes';
-import { UndoOutlined, RedoOutlined } from '@ant-design/icons';
+import { UndoOutlined, RedoOutlined, CopyOutlined, SnippetsOutlined } from '@ant-design/icons';
 
 export const TemplateEdit = () => {
   const { onFinish, query } = useForm<ITemplate>({
@@ -57,6 +57,9 @@ export const TemplateEdit = () => {
     redo,
     canUndo,
     canRedo,
+    copySelectedNodes,
+    pasteNodes,
+    hasCopiedNodes,
   } = useReactFlow();
 
   // State to track initial diagram state and changes
@@ -128,6 +131,64 @@ export const TemplateEdit = () => {
     event.dataTransfer.effectAllowed = 'move';
   };
 
+  // Enhanced copy function with notification
+  const handleCopy = () => {
+    const copied = copySelectedNodes();
+    if (copied) {
+      message.success('Nodes copied to clipboard');
+    } else {
+      message.info('No nodes selected to copy');
+    }
+  };
+
+  // Enhanced paste function with notification
+  const handlePaste = () => {
+    if (hasCopiedNodes) {
+      pasteNodes();
+      message.success('Nodes pasted');
+    } else {
+      message.info('No nodes to paste');
+    }
+  };
+
+  // Add notification for keyboard shortcuts
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      // Skip if we're in an input field or textarea
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement ||
+        (event.target as HTMLElement).isContentEditable
+      ) {
+        return;
+      }
+
+      // Copy shortcut: Ctrl+C or Command+C (Mac)
+      if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
+        const copied = copySelectedNodes();
+        if (copied) {
+          message.success('Nodes copied to clipboard');
+        }
+      }
+
+      // Paste shortcut: Ctrl+V or Command+V (Mac)
+      if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
+        if (hasCopiedNodes) {
+          pasteNodes();
+          message.success('Nodes pasted');
+        }
+      }
+    };
+
+    // Add event listener
+    document.addEventListener('keydown', handleKeyDown);
+
+    // Remove event listener on cleanup
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [copySelectedNodes, pasteNodes, hasCopiedNodes]);
+
   return (
     <div
       style={{ height: `calc(100vh - ${64 + 24 * 2}px)` }}
@@ -172,6 +233,18 @@ export const TemplateEdit = () => {
                   onClick={redo}
                   disabled={!canRedo}
                   title="Redo (Ctrl+Y or Ctrl+Shift+Z)"
+                />
+                <Button
+                  icon={<CopyOutlined />}
+                  onClick={handleCopy}
+                  disabled={!selectedNode && nodes.filter(n => n.selected).length === 0}
+                  title="Copy (Ctrl+C)"
+                />
+                <Button
+                  icon={<SnippetsOutlined />}
+                  onClick={handlePaste}
+                  disabled={!hasCopiedNodes}
+                  title="Paste (Ctrl+V)"
                 />
                 <Button type="primary" onClick={handleSave} disabled={!hasChanges}>
                   Save

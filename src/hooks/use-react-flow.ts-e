@@ -101,7 +101,7 @@ export type UseReactFlowReturnType = {
   redo: () => void;
   canUndo: boolean;
   canRedo: boolean;
-  copySelectedNodes: () => boolean;
+  copySelectedNodes: () => void;
   pasteNodes: () => void;
   hasCopiedNodes: boolean;
 };
@@ -130,11 +130,11 @@ const useReactFlow = (): UseReactFlowReturnType => {
   const [past, setPast] = useState<HistoryState[]>([]);
   const [future, setFuture] = useState<HistoryState[]>([]);
   const ignoringChanges = useRef(false);
-
+  
   // State for clipboard management
   const [copiedNodes, setCopiedNodes] = useState<Node[]>([]);
   const [copiedEdges, setCopiedEdges] = useState<Edge[]>([]);
-
+  
   const selectedNode = nodes ? nodes.find(node => node.id === selectedNodeId) : null;
   const selectedNodes = nodes ? nodes.filter(node => node.selected) : [];
 
@@ -399,7 +399,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
   }, [edges]);
 
   const hasCopiedNodes = copiedNodes.length > 0;
-
+  
   const copySelectedNodes = useCallback(() => {
     if (!selectedNodes.length && selectedNodeId) {
       // If no nodes are selected but we have a selectedNodeId, include that node
@@ -408,52 +408,49 @@ const useReactFlow = (): UseReactFlowReturnType => {
         const connectedEdges = getConnectedEdges([nodeToInclude], edges);
         setCopiedNodes([nodeToInclude]);
         setCopiedEdges(connectedEdges);
-        return true;
       }
     } else if (selectedNodes.length > 0) {
       // Copy all selected nodes and edges between them
       const connectedEdges = getConnectedEdges(selectedNodes, edges).filter(
-        edge =>
+        edge => 
           // Only include edges where both source and target are in the selection
-          selectedNodes.some(node => node.id === edge.source) &&
+          selectedNodes.some(node => node.id === edge.source) && 
           selectedNodes.some(node => node.id === edge.target)
       );
       setCopiedNodes(selectedNodes);
       setCopiedEdges(connectedEdges);
-      return true;
     }
-    return false;
   }, [selectedNodes, selectedNodeId, nodes, edges]);
 
   // Paste copied nodes at current viewport position
   const pasteNodes = useCallback(() => {
     if (!copiedNodes.length || !rfInstance) return;
-
+    
     // Add to history before pasting
     addToHistory();
-
+    
     // Generate a mapping from old node IDs to new node IDs
     const idMap = new Map<string, string>();
-
+    
     // Create new nodes with unique IDs at a slightly offset position
     const newNodes = copiedNodes.map(node => {
       const newId = `${node.type}-${uuidv4()}`;
       idMap.set(node.id, newId);
-
+      
       // Calculate new position - offset by 50px to make the paste visible
       const position = {
         x: node.position.x + 50,
         y: node.position.y + 50,
       };
-
+      
       // Create a deep copy of the node's data
       const newData = { ...node.data };
-
+      
       // If it's a named element, update the label to indicate it's a copy
       if (newData.label) {
         newData.label = `${newData.label} (copy)`;
       }
-
+      
       // Return the new node
       return {
         ...node,
@@ -463,12 +460,12 @@ const useReactFlow = (): UseReactFlowReturnType => {
         selected: true, // Select the pasted nodes
       };
     });
-
+    
     // Create new edges with updated source/target IDs
     const newEdges = copiedEdges.map(edge => {
       const sourceId = idMap.get(edge.source) || edge.source;
       const targetId = idMap.get(edge.target) || edge.target;
-
+      
       return {
         ...edge,
         id: `${sourceId}-${targetId}-${uuidv4()}`,
@@ -478,30 +475,22 @@ const useReactFlow = (): UseReactFlowReturnType => {
         targetHandle: edge.targetHandle,
       };
     });
-
+    
     // Add new nodes and edges to the diagram
     setNodes(nds => [...nds.map(n => ({ ...n, selected: false })), ...newNodes]);
     setEdges(eds => [...eds, ...newEdges]);
+    
   }, [copiedNodes, copiedEdges, rfInstance, addToHistory]);
 
   // Add keyboard shortcuts for undo/redo and copy/paste
   useEffect(() => {
     const handleKeyDown = (event: KeyboardEvent) => {
-      // Skip if we're in an input field or textarea
-      if (
-        event.target instanceof HTMLInputElement ||
-        event.target instanceof HTMLTextAreaElement ||
-        (event.target as HTMLElement).isContentEditable
-      ) {
-        return;
-      }
-
       // Check for undo: Ctrl+Z or Command+Z (Mac)
       if ((event.ctrlKey || event.metaKey) && event.key === 'z' && !event.shiftKey) {
         event.preventDefault();
         if (canUndo) undo();
       }
-
+      
       // Check for redo: Ctrl+Y or Ctrl+Shift+Z or Command+Shift+Z (Mac)
       if (
         ((event.ctrlKey || event.metaKey) && event.key === 'y') ||
@@ -510,27 +499,21 @@ const useReactFlow = (): UseReactFlowReturnType => {
         event.preventDefault();
         if (canRedo) redo();
       }
-
+      
       // Copy shortcut: Ctrl+C or Command+C (Mac)
       if ((event.ctrlKey || event.metaKey) && event.key === 'c') {
-        event.preventDefault();
         copySelectedNodes();
-        // Notification is handled in the UI layer
       }
-
+      
       // Paste shortcut: Ctrl+V or Command+V (Mac)
       if ((event.ctrlKey || event.metaKey) && event.key === 'v') {
-        event.preventDefault();
-        if (hasCopiedNodes) {
-          pasteNodes();
-          // Notification is handled in the UI layer
-        }
+        pasteNodes();
       }
     };
 
     // Add event listener
     document.addEventListener('keydown', handleKeyDown);
-
+    
     // Remove event listener on cleanup
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
