@@ -28,7 +28,7 @@ import { DeviceMap } from '@/pages/devices/map';
 import { DeviceList } from '@/pages/devices/list';
 import { websocketProvider } from '@/providers/liveProvider';
 import { Icon } from '@iconify/react';
-import { TemplateEdit, TemplateList, TemplateShow } from '@/pages/templates';
+import { TemplateEdit, TemplateList } from '@/pages/templates';
 import { ReactFlowProvider } from '@xyflow/react';
 
 const App: React.FC = () => {
@@ -124,7 +124,6 @@ const App: React.FC = () => {
                     </Route>
                     <Route path="/templates">
                       <Route index element={<TemplateList />} />
-                      <Route path=":id" element={<TemplateShow />} />
                       <Route path="edit/:id" element={<TemplateEdit />} />
                     </Route>
                     <Route path="/devices-map" element={<DeviceMap />} />

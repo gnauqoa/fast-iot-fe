@@ -16,7 +16,7 @@ import {
   LEAVE_DEVICE_ROOM_CHANNEL,
 } from '@/constants';
 import { axiosInstance } from '@refinedev/nestjsx-crud';
-import useReactFlow, { Mode } from '@/hooks/use-react-flow';
+import useReactFlow from '@/hooks/use-react-flow';
 import { ColorModeContext } from '@/contexts/color-mode';
 
 dayjs.extend(relativeTime);

@@ -5,6 +5,7 @@ import { BaseNode } from '../base';
 import { Slider } from 'antd';
 import { ChannelType } from '@/interfaces/template';
 export * from './properties';
+export * from './draggable';
 
 export type SliderNodeDataType = {
   label: string;

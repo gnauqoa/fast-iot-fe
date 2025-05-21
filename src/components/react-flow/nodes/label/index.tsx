@@ -3,6 +3,7 @@ import { Node, NodeProps } from '@xyflow/react';
 import { v4 as uuidv4 } from 'uuid';
 import { BaseNode } from '../base';
 import { Typography } from 'antd';
+export * from './draggable';
 
 const { Title } = Typography;
 

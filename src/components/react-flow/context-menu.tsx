@@ -10,9 +10,22 @@ import { OnNewNodeProps } from '@/hooks/use-react-flow';
 
 export interface ReactFlowContextMenuProps {
   onNewNode: OnNewNodeProps;
+  menu?: {
+    originalPos?: { x: number; y: number };
+  } | null;
 }
 
-export const ReactFlowContextMenu = ({ onNewNode }: ReactFlowContextMenuProps) => {
+export const ReactFlowContextMenu = ({ onNewNode, menu }: ReactFlowContextMenuProps) => {
+  const handleAddNode = (nodeType: string) => {
+    // Use the stored original position
+    if (menu?.originalPos) {
+      onNewNode(nodeType, menu.originalPos, {});
+    } else {
+      // Fallback to center position if no original position
+      onNewNode(nodeType, { x: 0, y: 0 }, {});
+    }
+  };
+
   return (
     <ContextMenuContent className="w-64">
       <ContextMenuSub>
@@ -21,41 +34,9 @@ export const ReactFlowContextMenu = ({ onNewNode }: ReactFlowContextMenuProps) =
           Add
         </ContextMenuSubTrigger>
         <ContextMenuSubContent className="w-48">
-          <ContextMenuItem
-            onClick={() => {
-              onNewNode(
-                'button',
-                {
-                  x: 0,
-                  y: 0,
-                },
-                {}
-              );
-            }}
-          >
-            Button
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => {
-              onNewNode(
-                'label',
-                {
-                  x: 0,
-                  y: 0,
-                },
-                {}
-              );
-            }}
-          >
-            Label
-          </ContextMenuItem>
-          <ContextMenuItem
-            onClick={() => {
-              onNewNode('slider', { x: 0, y: 0 }, {});
-            }}
-          >
-            Slider
-          </ContextMenuItem>
+          <ContextMenuItem onClick={() => handleAddNode('button')}>Button</ContextMenuItem>
+          <ContextMenuItem onClick={() => handleAddNode('label')}>Label</ContextMenuItem>
+          <ContextMenuItem onClick={() => handleAddNode('slider')}>Slider</ContextMenuItem>
         </ContextMenuSubContent>
       </ContextMenuSub>
     </ContextMenuContent>

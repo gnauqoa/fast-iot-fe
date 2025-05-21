@@ -11,8 +11,17 @@ import {
   OnNodesChange,
   ReactFlowInstance,
   Viewport,
+  useReactFlow as useReactFlowHook,
 } from '@xyflow/react';
-import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
+import {
+  Dispatch,
+  DragEventHandler,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 
 export enum Mode {
   EDIT = 1,
@@ -69,11 +78,17 @@ export type UseReactFlowReturnType = {
     left?: number;
     right?: number;
     bottom?: number;
+    originalPos?: { x: number; y: number };
   } | null;
   onCloseMenu: () => void;
   onNewNode: OnNewNodeProps;
   ref: React.RefObject<HTMLDivElement>;
   setViewport: Dispatch<SetStateAction<Viewport>>;
+  nodeDraggingType: string | null;
+  setNodeDraggingType: Dispatch<SetStateAction<string | null>>;
+  onDragStart: (event: React.DragEvent<HTMLDivElement>, nodeType: string) => void;
+  onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
 };
 
 const useReactFlow = (): UseReactFlowReturnType => {
@@ -86,14 +101,16 @@ const useReactFlow = (): UseReactFlowReturnType => {
     zoom: 1,
   });
   const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
-
+  const { screenToFlowPosition } = useReactFlowHook();
   const [menu, setMenu] = useState<{
     id?: string;
     top?: number;
     left?: number;
     right?: number;
     bottom?: number;
+    originalPos?: { x: number; y: number };
   } | null>(null);
+  const [nodeDraggingType, setNodeDraggingType] = useState<string | null>(null);
 
   const selectedNode = nodes ? nodes.find(node => node.id === selectedNodeId) : null;
 
@@ -110,19 +127,26 @@ const useReactFlow = (): UseReactFlowReturnType => {
   const onContextMenu = useCallback(
     (event: React.MouseEvent) => {
       if (!ref.current) return;
-      // Prevent native context menu from showing
 
       // Calculate position of the context menu. We want to make sure it
       // doesn't get positioned off-screen.
       const pane = ref.current.getBoundingClientRect();
+
+      // Store the exact position where user right-clicked
+      const flowPosition = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
       setMenu({
         top: event.clientY < pane.height - 200 ? event.clientY : undefined,
         left: event.clientX < pane.width - 200 ? event.clientX - 80 : undefined,
         right: event.clientX >= pane.width - 200 ? pane.width - event.clientX : undefined,
         bottom: event.clientY >= pane.height - 200 ? pane.height - event.clientY : undefined,
+        originalPos: flowPosition,
       });
     },
-    [setMenu]
+    [setMenu, screenToFlowPosition]
   );
 
   // Close the context menu if it's open whenever the window is clicked.
@@ -152,6 +176,34 @@ const useReactFlow = (): UseReactFlowReturnType => {
     },
     [nodes]
   );
+
+  const onDragOver = useCallback((event: React.DragEvent<HTMLDivElement>) => {
+    event.preventDefault();
+    event.dataTransfer.dropEffect = 'move';
+  }, []);
+
+  const onDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      event.preventDefault();
+      if (!nodeDraggingType) {
+        return;
+      }
+
+      const position = screenToFlowPosition({
+        x: event.clientX,
+        y: event.clientY,
+      });
+
+      onNewNode(nodeDraggingType, position, {});
+    },
+    [screenToFlowPosition, nodeDraggingType, onNewNode]
+  );
+
+  const onDragStart = (event: React.DragEvent<HTMLDivElement>, nodeType: string) => {
+    setNodeDraggingType(nodeType);
+    event.dataTransfer.setData('text/plain', nodeType);
+    event.dataTransfer.effectAllowed = 'move';
+  };
 
   const onNodesChange: OnNodesChange = useCallback(
     changes => {
@@ -249,6 +301,11 @@ const useReactFlow = (): UseReactFlowReturnType => {
     onNewNode,
     ref,
     setViewport,
+    nodeDraggingType,
+    setNodeDraggingType,
+    onDragStart,
+    onDragOver,
+    onDrop,
   };
 };
 

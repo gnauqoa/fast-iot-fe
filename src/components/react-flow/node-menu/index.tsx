@@ -1,4 +1,4 @@
-import { ReactNode } from 'react';
+import { ReactNode, useEffect } from 'react';
 import { Node, OnNodesChange } from '@xyflow/react';
 import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/radix/tabs';
 import { getNodeProperties } from '@/utility/node';
@@ -38,14 +38,24 @@ const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
   if (!open) return <></>;
 
   return (
-    <div className={cn('absolute right-0 z-20 flex h-[100vh] w-[20%] flex-col bg-card shadow-xl')}>
+    <div className={cn('absolute right-0 z-20 flex h-[100%] w-[250px] flex-col bg-card shadow-xl')}>
       <Tabs defaultValue="properties" className="w-full b-">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="properties">Properties</TabsTrigger>
           <TabsTrigger value="style">Styles</TabsTrigger>
         </TabsList>
         <TabsContent value="properties">
-          {NodeProperties && <NodeProperties data={node?.data} onDataChange={handleDataChange} />}
+          {NodeProperties && (
+            <NodeProperties
+              data={
+                node?.data || {
+                  channel: '',
+                  label: '',
+                }
+              }
+              onDataChange={handleDataChange}
+            />
+          )}
         </TabsContent>
         <TabsContent value="style"></TabsContent>
       </Tabs>

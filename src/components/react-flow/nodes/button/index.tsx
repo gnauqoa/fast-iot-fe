@@ -5,6 +5,7 @@ import { BaseNode } from '../base';
 import { Switch } from 'antd';
 import { ChannelType } from '@/interfaces/template';
 export * from './properties';
+export * from './draggable';
 export type ButtonNodeDataType = {
   label: string;
   channel: string;
