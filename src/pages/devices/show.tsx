@@ -51,8 +51,10 @@ export const DeviceShow = () => {
 
   const handleDeviceChange = useCallback(
     (updated: IDevice) => {
-      setDevice(prev => ({ ...prev, ...updated }));
       if (!record?.template?.desktopPrototype) return;
+
+      setDevice(prev => ({ ...prev, ...updated }));
+
       const nodesWithValues = (record.template.desktopPrototype.nodes || []).map(node => ({
         ...node,
         data: {
@@ -76,6 +78,8 @@ export const DeviceShow = () => {
       if (!channelPrototype) return;
 
       const currentChannelData = device.channels.find(ch => ch.name === name);
+
+      console.log('currentChannelData', currentChannelData);
       if (!currentChannelData) {
         const newChannel = {
           name,
@@ -128,7 +132,7 @@ export const DeviceShow = () => {
   useEffect(() => {
     if (!record) return;
 
-    setDevice(prev => ({ ...prev, ...record }));
+    handleDeviceChange(record);
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
     socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
 
@@ -199,7 +203,6 @@ export const DeviceShow = () => {
           nodesConnectable={false}
           elementsSelectable={false}
           ref={ref}
-          noPanClassName="nopan"
           colorMode={mode as ColorMode}
           nodes={nodes}
           edges={edges}
@@ -216,7 +219,7 @@ export const DeviceShow = () => {
           fitView
         >
           <Background />
-          <Controls showInteractive={false} />
+          <Controls />
         </ReactFlow>
       </div>
     </Show>
