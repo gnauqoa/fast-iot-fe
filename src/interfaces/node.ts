@@ -2,13 +2,14 @@ export enum ENodeTypes {
   'button' = 'button',
   'label' = 'label',
   'slider' = 'slider',
+  'select' = 'select',
 }
 
 export interface NodePropertiesProps {
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   data: Record<string, any>;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  onDataChange: (key: string, value: any) => void;
+  onDataChange: (data: { key: string; value: any }[]) => void;
 }
 
 export interface NodePropertiesType {

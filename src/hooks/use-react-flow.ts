@@ -14,15 +14,7 @@ import {
   useReactFlow as useReactFlowHook,
   getConnectedEdges,
 } from '@xyflow/react';
-import {
-  Dispatch,
-  DragEventHandler,
-  SetStateAction,
-  useCallback,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import { Dispatch, SetStateAction, useCallback, useEffect, useRef, useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 
 export enum Mode {
@@ -96,7 +88,7 @@ export type UseReactFlowReturnType = {
   setNodeDraggingType: Dispatch<SetStateAction<string | null>>;
   onDragStart: (event: React.DragEvent<HTMLDivElement>, nodeType: string) => void;
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
-  onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (event: React.DragEvent<HTMLDivElement>, data?: any) => void;
   undo: () => void;
   redo: () => void;
   canUndo: boolean;
@@ -272,7 +264,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
   }, []);
 
   const onDrop = useCallback(
-    (event: React.DragEvent<HTMLDivElement>) => {
+    (event: React.DragEvent<HTMLDivElement>, data: any = {}) => {
       event.preventDefault();
       if (!nodeDraggingType) {
         return;
@@ -283,7 +275,7 @@ const useReactFlow = (): UseReactFlowReturnType => {
         y: event.clientY,
       });
 
-      onNewNode(nodeDraggingType, position, {});
+      onNewNode(nodeDraggingType, position, data);
     },
     [screenToFlowPosition, nodeDraggingType, onNewNode]
   );

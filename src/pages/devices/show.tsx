@@ -1,9 +1,9 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useShow } from '@refinedev/core';
 import { Show } from '@refinedev/antd';
-import { Badge, Button, Flex, message, Slider, Typography } from 'antd';
+import { Badge, Button, Flex, message, Typography } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
-import { Background, ColorMode, Controls, ReactFlow } from '@xyflow/react';
+import { Background, ColorMode, Controls, Node, ReactFlow } from '@xyflow/react';
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { DeviceStatus, IDevice } from '@/interfaces/device';
@@ -49,67 +49,59 @@ export const DeviceShow = () => {
     viewport,
   } = useReactFlow();
 
-  const handleDeviceChange = useCallback(
+  const updateView = useCallback(
     (updated: IDevice) => {
       if (!record?.template?.desktopPrototype) return;
+      const deviceData = device || record;
 
-      setDevice(prev => ({ ...prev, ...updated }));
+      const updateDevice = (updated: Partial<IDevice>) => {
+        const newDevice = { ...deviceData, ...updated };
+        setDevice(newDevice);
 
-      const nodesWithValues = (record.template.desktopPrototype.nodes || []).map(node => ({
-        ...node,
-        data: {
-          ...node.data,
-          value: device?.channels.find(ch => ch.name === node.data.channel)?.value,
-          onChange: handleChannelChange,
-        },
-      }));
+        const nodesWithValues = (newDevice.template.desktopPrototype.nodes || []).reduce(
+          (acc, node) => {
+            const channel = newDevice.channels.find(ch => ch.name === node.data.channel);
 
-      setNodes(nodesWithValues);
-      setEdges(record.template.desktopPrototype.edges || []);
-    },
-    [device, record?.template?.desktopPrototype]
-  );
+            acc.push({
+              ...node,
+              data: { ...node.data, value: channel?.value, onChange: handleChannelChange },
+            });
 
-  // Handle real-time channel value change
-  const handleChannelChange = useCallback(
-    (name: string, value: string | number | boolean | object) => {
-      if (!device || !record?.id) return;
-      const channelPrototype = device.template.channels.find(ch => ch.name === name);
-      if (!channelPrototype) return;
+            return acc;
+          },
+          [] as Node[]
+        );
+        setNodes(nodesWithValues);
+        setEdges(newDevice.template.desktopPrototype.edges || []);
+      };
 
-      const currentChannelData = device.channels.find(ch => ch.name === name);
+      const handleChannelChange = (name: string, value: string | number | boolean | object) => {
+        if (!deviceData) return;
 
-      console.log('currentChannelData', currentChannelData);
-      if (!currentChannelData) {
-        const newChannel = {
-          name,
-          value,
-        };
+        const channelPrototype = deviceData.template.channels.find(ch => ch.name === name);
+        if (!channelPrototype) return;
 
-        handleDeviceChange({
-          ...device,
-          channels: [...device.channels, newChannel],
+        updateDevice({
+          channels: deviceData.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
         });
-      } else {
-        handleDeviceChange({
-          ...device,
-          channels: device.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
+
+        socket.emit('device/update', {
+          id: deviceData.id,
+          channelName: name,
+          channelValue: value,
         });
-      }
-      socket.emit('device/update', {
-        id: record.id,
-        channelName: name,
-        channelValue: value,
-      });
+      };
+
+      updateDevice(updated);
     },
-    [device, record?.id]
+    [device, record]
   );
 
   // Sync updated device from socket event
   const handleDeviceUpdate = useCallback(
     (updated: IDevice) => {
       if (updated.id === record?.id) {
-        setDevice(prev => ({ ...prev, ...updated }));
+        updateView(updated);
       }
     },
     [record?.id]
@@ -132,7 +124,7 @@ export const DeviceShow = () => {
   useEffect(() => {
     if (!record) return;
 
-    handleDeviceChange(record);
+    updateView(record);
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
     socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
 

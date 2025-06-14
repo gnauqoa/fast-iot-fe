@@ -2,11 +2,11 @@ import { ContextMenu, ContextMenuTrigger } from '@/components/radix';
 import { Background, ColorMode } from '@xyflow/react';
 import { Controls } from '@xyflow/react';
 import NodeMenu from '@/components/react-flow/node-menu';
-import useReactFlow, { Mode } from '@/hooks/use-react-flow';
+import useReactFlow, { OnNewNodeProps } from '@/hooks/use-react-flow';
 import { ReactFlow } from '@xyflow/react';
 import { Button, message } from 'antd';
 import { ReactFlowContextMenu } from '@/components/react-flow/context-menu';
-import { DragEventHandler, useContext, useEffect, useState } from 'react';
+import { DragEventHandler, useCallback, useContext, useEffect, useState } from 'react';
 import { ColorModeContext } from '@/contexts/color-mode';
 import { nodeTypes, nodeTypeToChannelType } from '@/utility/node';
 import { useForm } from '@refinedev/core';
@@ -19,6 +19,7 @@ import {
   DraggableSliderNode,
 } from '@/components/react-flow/nodes';
 import { UndoOutlined, RedoOutlined, CopyOutlined, SnippetsOutlined } from '@ant-design/icons';
+import { DraggableSelectNode } from '@/components/react-flow/nodes/select/draggable';
 
 export const TemplateEdit = () => {
   const { onFinish, query } = useForm<ITemplate>({
@@ -71,7 +72,14 @@ export const TemplateEdit = () => {
 
   useEffect(() => {
     if (templateData?.desktopPrototype) {
-      const newNodes = templateData.desktopPrototype?.nodes || [];
+      const newNodes = (templateData.desktopPrototype?.nodes || []).map(node => ({
+        ...node,
+        data: {
+          ...node.data,
+          existingChannels: templateData.channels || [],
+        },
+      }));
+
       const newEdges = templateData.desktopPrototype?.edges || [];
 
       setInitialState({
@@ -83,6 +91,25 @@ export const TemplateEdit = () => {
       setEdges(newEdges);
     }
   }, [templateData, onViewportChange, setNodes, setEdges]);
+
+  const handleNewNode: OnNewNodeProps = useCallback(
+    (type, position, data) => {
+      onNewNode(type, position, {
+        ...data,
+        existingChannels: templateData?.channels || [],
+      });
+    },
+    [onNewNode, templateData]
+  );
+
+  const handleDrop = useCallback(
+    (event: React.DragEvent<HTMLDivElement>) => {
+      onDrop(event, {
+        existingChannels: templateData?.channels || [],
+      });
+    },
+    [onDrop, templateData]
+  );
 
   useEffect(() => {
     if (!initialState) return;
@@ -216,7 +243,7 @@ export const TemplateEdit = () => {
               fitView
               attributionPosition="bottom-left"
               onDragOver={onDragOver}
-              onDrop={onDrop}
+              onDrop={handleDrop}
               onDragStart={onDragStart as DragEventHandler<HTMLDivElement>}
             >
               <Background />
@@ -252,7 +279,7 @@ export const TemplateEdit = () => {
               </div>
             </ReactFlow>
           </ContextMenuTrigger>
-          <ReactFlowContextMenu onNewNode={onNewNode} menu={menu} />
+          <ReactFlowContextMenu onNewNode={handleNewNode} menu={menu} />
         </ContextMenu>
       </div>
       <div className="min-w-[240px] w-[240px] flex border-l border-border">
@@ -270,6 +297,9 @@ export const TemplateEdit = () => {
             </div>
             <div className="hover:bg-accent transition-colors rounded-md overflow-hidden cursor-grab active:cursor-grabbing">
               <DraggableLabelNode onDragStart={handleDragStart} />
+            </div>
+            <div className="hover:bg-accent transition-colors rounded-md overflow-hidden cursor-grab active:cursor-grabbing">
+              <DraggableSelectNode onDragStart={handleDragStart} />
             </div>
           </div>
         </div>

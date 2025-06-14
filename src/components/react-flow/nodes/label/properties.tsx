@@ -8,14 +8,14 @@ export const LabelProperties: NodePropertiesType = ({ data, onDataChange }) => {
         label="Label"
         name="label"
         value={data.label}
-        onChange={event => onDataChange('label', event.currentTarget.value)}
+        onChange={event => onDataChange([{ key: 'label', value: event.currentTarget.value }])}
       />
 
       <StringProperty
         label="Channel"
         name="channel"
         value={data.channel}
-        onChange={event => onDataChange('channel', event.currentTarget.value)}
+        onChange={event => onDataChange([{ key: 'channel', value: event.currentTarget.value }])}
       />
     </div>
   );

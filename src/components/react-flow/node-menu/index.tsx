@@ -1,4 +1,4 @@
-import { ReactNode, useEffect } from 'react';
+import { ReactNode } from 'react';
 import { Node, OnNodesChange } from '@xyflow/react';
 import { TabsContent, Tabs, TabsList, TabsTrigger } from '@/components/radix/tabs';
 import { getNodeProperties } from '@/utility/node';
@@ -17,7 +17,7 @@ const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
 
   const NodeProperties = node?.type ? getNodeProperties(node.type as ENodeTypes) : null;
 
-  const handleDataChange = (key: string, value: any) => {
+  const handleDataChange = (data: { key: string; value: any }[]) => {
     if (!node) return;
 
     onNodeChange([
@@ -28,7 +28,10 @@ const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
           ...node,
           data: {
             ...node.data,
-            [key]: value,
+            ...data.reduce<Record<string, any>>((acc, curr) => {
+              acc[curr.key] = curr.value;
+              return acc;
+            }, {}),
           },
         },
       },
@@ -38,7 +41,7 @@ const NodeMenu: NodeMenuType = ({ node, onNodeChange }) => {
   if (!open) return <></>;
 
   return (
-    <div className={cn('absolute right-0 z-20 flex h-[100%] w-[250px] flex-col bg-card shadow-xl')}>
+    <div className={cn('absolute right-0 z-20 flex h-[100%] flex-col bg-card shadow-xl')}>
       <Tabs defaultValue="properties" className="w-full b-">
         <TabsList className="grid w-full grid-cols-2">
           <TabsTrigger value="properties">Properties</TabsTrigger>

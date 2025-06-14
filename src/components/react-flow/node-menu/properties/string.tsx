@@ -16,7 +16,7 @@ const StringProperty = ({
   inputProps?: React.InputHTMLAttributes<HTMLInputElement>;
 }) => {
   return (
-    <div className="flex w-full flex-row items-center gap-2">
+    <div className="flex w-full flex-row items-center gap-3">
       <Label className="min-w-[20%]" htmlFor={name}>
         {label}
       </Label>

@@ -5,6 +5,7 @@ export enum ChannelType {
   NUMBER = 'Number',
   BOOLEAN = 'Boolean',
   OBJECT = 'Object',
+  SELECT = 'Select',
 }
 
 export interface IPrototype {
@@ -16,6 +17,7 @@ export interface IPrototype {
 export interface IChannelDefinition {
   name: string;
   type: ChannelType;
+  options?: { label: string; value: string }[];
 }
 
 export interface ITemplate {

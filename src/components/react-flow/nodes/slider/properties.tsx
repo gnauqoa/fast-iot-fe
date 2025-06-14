@@ -9,35 +9,37 @@ export const SliderProperties: NodePropertiesType = ({ data, onDataChange }) => 
         label="Label"
         name="label"
         value={data.label}
-        onChange={event => onDataChange('label', event.currentTarget.value)}
+        onChange={event => onDataChange([{ key: 'label', value: event.currentTarget.value }])}
       />
 
       <StringProperty
         label="Channel"
         name="channel"
         value={data.channel}
-        onChange={event => onDataChange('channel', event.currentTarget.value)}
+        onChange={event => onDataChange([{ key: 'channel', value: event.currentTarget.value }])}
       />
 
       <NumberProperty
         label="Min"
         name="min"
         value={data.min ?? 0}
-        onChange={event => onDataChange('min', Number(event.currentTarget.value))}
+        onChange={event => onDataChange([{ key: 'min', value: Number(event.currentTarget.value) }])}
       />
 
       <NumberProperty
         label="Max"
         name="max"
         value={data.max ?? 100}
-        onChange={event => onDataChange('max', Number(event.currentTarget.value))}
+        onChange={event => onDataChange([{ key: 'max', value: Number(event.currentTarget.value) }])}
       />
 
       <NumberProperty
         label="Step"
         name="step"
         value={data.step ?? 1}
-        onChange={event => onDataChange('step', Number(event.currentTarget.value))}
+        onChange={event =>
+          onDataChange([{ key: 'step', value: Number(event.currentTarget.value) }])
+        }
       />
     </div>
   );
