@@ -30,7 +30,6 @@ export const DeviceShow = () => {
 
   const [device, setDevice] = useState<IDevice | null>(null);
   const [deviceToken, setDeviceToken] = useState<string | null>(null);
-
   const { mode } = useContext(ColorModeContext);
   const {
     setRfInstance,
@@ -84,11 +83,14 @@ export const DeviceShow = () => {
         updateDevice({
           channels: deviceData.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
         });
-
         socket.emit('device/update', {
           id: deviceData.id,
-          channelName: name,
-          channelValue: value,
+          channels: [
+            {
+              name,
+              value,
+            },
+          ],
         });
       };
 
