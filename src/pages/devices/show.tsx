@@ -1,5 +1,5 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
-import { Link, useShow } from '@refinedev/core';
+import { Link, useShow, useSubscription } from '@refinedev/core';
 import { Show } from '@refinedev/antd';
 import { Badge, Button, Flex, message, Typography } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
@@ -121,6 +121,13 @@ export const DeviceShow = () => {
       message.error('Failed to create device token.');
     }
   };
+  useSubscription({
+    channel: HANDLE_DEVICE_DATA_CHANNEL,
+    onLiveEvent: event => {
+      const updated = event.payload as IDevice;
+      handleDeviceUpdate(updated);
+    },
+  });
 
   // Setup initial device state and socket listeners
   useEffect(() => {
@@ -128,13 +135,11 @@ export const DeviceShow = () => {
 
     updateView(record);
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
-    socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
 
     return () => {
       socket.emit(LEAVE_DEVICE_ROOM_CHANNEL, record.id);
-      socket.off(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
     };
-  }, [record, handleDeviceUpdate]);
+  }, [record]);
 
   if (!device) return <></>;
 

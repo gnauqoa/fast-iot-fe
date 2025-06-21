@@ -30,6 +30,9 @@ import { websocketProvider } from '@/providers/liveProvider';
 import { Icon } from '@iconify/react';
 import { TemplateEdit, TemplateList } from '@/pages/templates';
 import { ReactFlowProvider } from '@xyflow/react';
+import { NotificationList } from './pages/notifications/list';
+import { NotificationContextProvider } from './contexts/notification/notification-context';
+import { NotificationBadgeIcon } from './components/notifications';
 
 const App: React.FC = () => {
   return (
@@ -92,57 +95,68 @@ const App: React.FC = () => {
                       icon: <TeamOutlined style={{ fontSize: '16px' }} />,
                     },
                   },
+                  {
+                    name: 'notifications',
+                    list: '/notifications',
+                    meta: {
+                      canDelete: true,
+                      icon: <NotificationBadgeIcon />,
+                    },
+                  },
                 ]}
               >
-                <Routes>
-                  <Route
-                    element={
-                      <Authenticated
-                        key="autheticated-inner"
-                        fallback={<CatchAllNavigate to="/login" />}
-                      >
-                        <ThemedLayoutV2
-                          Title={({ collapsed }) => (
-                            <ThemedTitleV2
-                              collapsed={collapsed}
-                              icon={collapsed ? <AppLogo /> : <AppLogo />}
-                              text="Admin"
-                            />
-                          )}
-                          Header={() => <Header sticky />}
-                          Sider={props => <ThemedSiderV2 {...props} fixed />}
+                <NotificationContextProvider>
+                  <Routes>
+                    <Route
+                      element={
+                        <Authenticated
+                          key="autheticated-inner"
+                          fallback={<CatchAllNavigate to="/login" />}
                         >
-                          <Outlet />
-                        </ThemedLayoutV2>
-                      </Authenticated>
-                    }
-                  >
-                    <Route path="/" element={<Navigate to={'/devices'} />} />
-                    <Route path="/devices">
-                      <Route index element={<DeviceList />} />
-                      <Route path=":id" element={<DeviceShow />} />
+                          <ThemedLayoutV2
+                            Title={({ collapsed }) => (
+                              <ThemedTitleV2
+                                collapsed={collapsed}
+                                icon={collapsed ? <AppLogo /> : <AppLogo />}
+                                text="Admin"
+                              />
+                            )}
+                            Header={() => <Header sticky />}
+                            Sider={props => <ThemedSiderV2 {...props} fixed />}
+                          >
+                            <Outlet />
+                          </ThemedLayoutV2>
+                        </Authenticated>
+                      }
+                    >
+                      <Route path="/" element={<Navigate to={'/devices'} />} />
+                      <Route path="/devices">
+                        <Route index element={<DeviceList />} />
+                        <Route path=":id" element={<DeviceShow />} />
+                      </Route>
+                      <Route path="/templates">
+                        <Route index element={<TemplateList />} />
+                        <Route path="edit/:id" element={<TemplateEdit />} />
+                      </Route>
+                      <Route path="/devices-map" element={<DeviceMap />} />
+                      <Route path="/users">
+                        <Route index element={<UserList />} />
+                        <Route path="edit/:id" element={<UserEdit />} />
+                      </Route>
+                      <Route path="/notifications" element={<NotificationList />} />
+                      <Route path="*" element={<ErrorComponent />} />
                     </Route>
-                    <Route path="/templates">
-                      <Route index element={<TemplateList />} />
-                      <Route path="edit/:id" element={<TemplateEdit />} />
+                    <Route
+                      element={
+                        <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+                          <NavigateToResource />
+                        </Authenticated>
+                      }
+                    >
+                      <Route path="/login" element={<Login />} />
                     </Route>
-                    <Route path="/devices-map" element={<DeviceMap />} />
-                    <Route path="/users">
-                      <Route index element={<UserList />} />
-                      <Route path="edit/:id" element={<UserEdit />} />
-                    </Route>
-                    <Route path="*" element={<ErrorComponent />} />
-                  </Route>
-                  <Route
-                    element={
-                      <Authenticated key="authenticated-outer" fallback={<Outlet />}>
-                        <NavigateToResource />
-                      </Authenticated>
-                    }
-                  >
-                    <Route path="/login" element={<Login />} />
-                  </Route>
-                </Routes>
+                  </Routes>
+                </NotificationContextProvider>
               </Refine>
             </ColorModeContextProvider>
           </RefineKbarProvider>
