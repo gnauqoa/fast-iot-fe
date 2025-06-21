@@ -32,7 +32,7 @@ import { TemplateEdit, TemplateList } from '@/pages/templates';
 import { ReactFlowProvider } from '@xyflow/react';
 import { NotificationList } from './pages/notifications/list';
 import { NotificationContextProvider } from './contexts/notification/notification-context';
-import { NotificationBadgeIcon } from './components/notifications';
+import { NotificationIcon } from './components/notifications';
 
 const App: React.FC = () => {
   return (
@@ -100,7 +100,7 @@ const App: React.FC = () => {
                     list: '/notifications',
                     meta: {
                       canDelete: true,
-                      icon: <NotificationBadgeIcon />,
+                      icon: <NotificationIcon />,
                     },
                   },
                 ]}
