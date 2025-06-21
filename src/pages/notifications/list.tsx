@@ -1,4 +1,4 @@
-import { Table, Tag, Select, Button, Form, Space, Typography, DatePicker } from 'antd';
+import { Table, Tag, Button, Form, Space, Typography } from 'antd';
 import { CheckCircleOutlined } from '@ant-design/icons';
 import { DeleteButton, useTable } from '@refinedev/antd';
 import { INotification } from '@/interfaces/notification';
@@ -6,12 +6,11 @@ import dayjs from 'dayjs';
 import { useCustomMutation, useSubscription } from '@refinedev/core';
 
 const { Text } = Typography;
-const { RangePicker } = DatePicker;
 
 export const NotificationList = () => {
   const [form] = Form.useForm();
 
-  const { tableProps, tableQuery, setFilters } = useTable<INotification>({
+  const { tableProps, tableQuery } = useTable<INotification>({
     resource: 'notifications',
     syncWithLocation: true,
     pagination: { pageSize: 10 },
@@ -61,48 +60,9 @@ export const NotificationList = () => {
     });
   };
 
-  const onFilterChange = (_: any, allValues: any) => {
-    const filters: any = [];
-
-    if (allValues.status !== undefined && allValues.status !== '') {
-      filters.push({
-        field: 'isRead',
-        operator: 'eq',
-        value: allValues.status === 'true',
-      });
-    }
-
-    if (allValues.dateRange?.length === 2) {
-      filters.push({
-        field: 'createdAt',
-        operator: 'gte',
-        value: allValues.dateRange[0].startOf('day').toISOString(),
-      });
-      filters.push({
-        field: 'createdAt',
-        operator: 'lte',
-        value: allValues.dateRange[1].endOf('day').toISOString(),
-      });
-    }
-
-    setFilters(filters, 'replace');
-  };
-
   return (
     <div>
       <Space style={{ marginBottom: 16, justifyContent: 'space-between', width: '100%' }}>
-        <Form form={form} layout="inline" onValuesChange={onFilterChange}>
-          <Form.Item name="status" label="Status">
-            <Select style={{ width: 120 }} allowClear>
-              <Select.Option value="true">Read</Select.Option>
-              <Select.Option value="false">Unread</Select.Option>
-            </Select>
-          </Form.Item>
-          <Form.Item name="dateRange" label="Created At">
-            <RangePicker />
-          </Form.Item>
-        </Form>
-
         <Button
           type="primary"
           icon={<CheckCircleOutlined />}
