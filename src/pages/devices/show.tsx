@@ -101,10 +101,9 @@ export const DeviceShow = () => {
 
   // Sync updated device from socket event
   const handleDeviceUpdate = useCallback(
-    (updated: string) => {
-      const device = JSON.parse(updated) as IDevice;
-      if (device.id === record?.id) {
-        updateView(device);
+    (updated: IDevice) => {
+      if (updated.id === record?.id) {
+        updateView(updated);
       }
     },
     [record?.id]

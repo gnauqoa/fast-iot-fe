@@ -35,13 +35,7 @@ export interface IDevice {
   position: PostGISPoint;
   user: IUser;
   template: ITemplate;
-  channels: (
-    | IChannel
-    | {
-        name: string;
-        value: IChannelValue;
-      }
-  )[];
+  channels: IChannel[];
   userId: number;
   createdAt: Date;
   updatedAt: Date;
