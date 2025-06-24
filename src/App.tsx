@@ -26,13 +26,12 @@ import { axiosInstance } from '@/utility/axios';
 import { DeviceShow } from '@/pages/devices';
 import { DeviceMap } from '@/pages/devices/map';
 import { DeviceList } from '@/pages/devices/list';
-import { websocketProvider } from '@/providers/liveProvider';
 import { Icon } from '@iconify/react';
 import { TemplateEdit, TemplateList } from '@/pages/templates';
 import { ReactFlowProvider } from '@xyflow/react';
 import { NotificationList } from './pages/notifications/list';
-import { NotificationContextProvider } from './contexts/notification/notification-context';
 import { NotificationIcon } from './components/notifications';
+import { SocketProvider } from './providers/socketProvider';
 
 const App: React.FC = () => {
   return (
@@ -41,71 +40,70 @@ const App: React.FC = () => {
         <BrowserRouter>
           <RefineKbarProvider>
             <ColorModeContextProvider>
-              <Refine
-                liveProvider={websocketProvider}
-                dataProvider={dataProvider(API_URL, axiosInstance)}
-                routerProvider={routerBindings}
-                authProvider={authProvider}
-                accessControlProvider={accessControlProvider}
-                notificationProvider={notificationProvider}
-                options={{
-                  disableTelemetry: true,
-                  syncWithLocation: true,
-                  warnWhenUnsavedChanges: true,
-                }}
-                resources={[
-                  {
-                    name: 'devices',
-                    list: '/devices',
-                    edit: '/devices/edit/:id',
-                    show: '/devices/:id',
-                    meta: {
-                      canDelete: true,
-                      icon: (
-                        <Icon icon="bitcoin-icons:node-hardware-filled" width="16" height="16" />
-                      ),
+              <SocketProvider>
+                <Refine
+                  dataProvider={dataProvider(API_URL, axiosInstance)}
+                  routerProvider={routerBindings}
+                  authProvider={authProvider}
+                  accessControlProvider={accessControlProvider}
+                  notificationProvider={notificationProvider}
+                  options={{
+                    disableTelemetry: true,
+                    syncWithLocation: true,
+                    warnWhenUnsavedChanges: true,
+                  }}
+                  resources={[
+                    {
+                      name: 'devices',
+                      list: '/devices',
+                      edit: '/devices/edit/:id',
+                      show: '/devices/:id',
+                      meta: {
+                        canDelete: true,
+                        icon: (
+                          <Icon icon="bitcoin-icons:node-hardware-filled" width="16" height="16" />
+                        ),
+                      },
                     },
-                  },
-                  {
-                    name: 'templates',
-                    list: '/templates',
-                    edit: '/templates/edit/:id',
-                    show: '/templates/:id',
-                    meta: {
-                      canDelete: true,
-                      icon: <Icon icon="tabler:template" width="16" height="16" />,
+                    {
+                      name: 'templates',
+                      list: '/templates',
+                      edit: '/templates/edit/:id',
+                      show: '/templates/:id',
+                      meta: {
+                        canDelete: true,
+                        icon: <Icon icon="tabler:template" width="16" height="16" />,
+                      },
                     },
-                  },
-                  {
-                    name: 'devices-map',
-                    list: '/devices-map',
-                    meta: {
-                      canDelete: false,
-                      icon: <Icon icon="mdi:map-marker" width="16" height="16" />,
+                    {
+                      name: 'devices-map',
+                      list: '/devices-map',
+                      meta: {
+                        canDelete: false,
+                        icon: <Icon icon="mdi:map-marker" width="16" height="16" />,
+                      },
                     },
-                  },
-                  {
-                    name: 'users',
-                    list: '/users',
-                    create: '/users/create',
-                    edit: '/users/edit/:id',
-                    show: '/users/:id',
-                    meta: {
-                      canDelete: true,
-                      icon: <TeamOutlined style={{ fontSize: '16px' }} />,
+                    {
+                      name: 'users',
+                      list: '/users',
+                      create: '/users/create',
+                      edit: '/users/edit/:id',
+                      show: '/users/:id',
+                      meta: {
+                        canDelete: true,
+                        icon: <TeamOutlined style={{ fontSize: '16px' }} />,
+                      },
                     },
-                  },
-                  {
-                    name: 'notifications',
-                    list: '/notifications',
-                    meta: {
-                      canDelete: true,
-                      icon: <NotificationIcon />,
+                    {
+                      name: 'notifications',
+                      list: '/notifications',
+                      meta: {
+                        canDelete: true,
+                        icon: <NotificationIcon />,
+                      },
                     },
-                  },
-                ]}
-              >
-                <NotificationContextProvider>
+                  ]}
+                >
                   <Routes>
                     <Route
                       element={
@@ -156,8 +154,8 @@ const App: React.FC = () => {
                       <Route path="/login" element={<Login />} />
                     </Route>
                   </Routes>
-                </NotificationContextProvider>
-              </Refine>
+                </Refine>
+              </SocketProvider>
             </ColorModeContextProvider>
           </RefineKbarProvider>
         </BrowserRouter>{' '}

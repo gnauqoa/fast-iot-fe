@@ -2,7 +2,7 @@ import { Table, Tag, Input, Select, Button, Form, Space } from 'antd';
 import { SearchOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { IDevice, DeviceStatus, statusColors } from '@/interfaces/device';
-import { socket } from '@/providers/liveProvider';
+import { socket } from '@/utility/socket';
 import { CrudFilters, Link } from '@refinedev/core';
 import { capitalize } from '@/utility/text';
 import { EditButton, ShowButton, DeleteButton, useTable } from '@refinedev/antd';

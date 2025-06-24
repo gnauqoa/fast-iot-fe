@@ -7,7 +7,7 @@ import { Background, ColorMode, Controls, Node, ReactFlow } from '@xyflow/react'
 import dayjs from 'dayjs';
 import relativeTime from 'dayjs/plugin/relativeTime';
 import { DeviceStatus, IDevice } from '@/interfaces/device';
-import { socket } from '@/providers/liveProvider';
+import { socket } from '@/utility/socket';
 import { capitalize } from '@/utility/text';
 import { nodeTypes } from '@/utility/node';
 import {

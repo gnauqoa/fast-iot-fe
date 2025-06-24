@@ -10,7 +10,7 @@ import { extractRoleInfoFromToken } from '@/utility/user';
 import { axiosInstance } from '@/utility/axios';
 import { AxiosResponse } from 'axios';
 import { IUser } from 'interfaces/user';
-import { connectSocket } from './liveProvider';
+import { connectSocket } from '../utility/socket';
 
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {

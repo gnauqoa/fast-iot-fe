@@ -1,6 +1,6 @@
 import { RefineThemes } from '@refinedev/antd';
 import { ConfigProvider, theme } from 'antd';
-import { PropsWithChildren, createContext, useEffect, useState } from 'react';
+import { createContext, ReactNode, useEffect, useState } from 'react';
 
 type ColorModeContextType = {
   mode: string;
@@ -9,7 +9,7 @@ type ColorModeContextType = {
 
 export const ColorModeContext = createContext<ColorModeContextType>({} as ColorModeContextType);
 
-export const ColorModeContextProvider: React.FC<PropsWithChildren> = ({ children }) => {
+export const ColorModeContextProvider = ({ children }: { children: ReactNode }) => {
   const colorModeFromLocalStorage = localStorage.getItem('colorMode');
   const isSystemPreferenceDark = window?.matchMedia('(prefers-color-scheme: dark)').matches;
 

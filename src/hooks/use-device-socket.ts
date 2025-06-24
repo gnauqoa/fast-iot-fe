@@ -4,7 +4,7 @@ import {
   LEAVE_DEVICE_ROOM_CHANNEL,
 } from '@/constants';
 import { IDevice } from '@/interfaces/device';
-import { socket } from '@/providers/liveProvider';
+import { socket } from '@/utility/socket';
 import { useCallback, useEffect, useState } from 'react';
 
 const useDeviceSocket = (deviceId: number | undefined) => {

@@ -4,7 +4,6 @@ import {
   LIVE_PROVIDER_URL,
   TOKEN_KEY,
 } from '@/constants';
-import { LiveEvent, LiveProvider } from '@refinedev/core';
 import { io, Socket } from 'socket.io-client';
 
 let socketInstance: Socket | null = null;
@@ -43,28 +42,6 @@ export const connectSocket = () => {
     socket.connect();
   }
   return socket;
-};
-
-export const websocketProvider: LiveProvider = {
-  unsubscribe: subscription => {
-    subscription.unsubscribe();
-  },
-  subscribe: ({ channel, callback }) => {
-    const socket = connectSocket();
-
-    const eventHandler = (data: LiveEvent) => callback(data);
-    socket.on(channel, eventHandler);
-
-    return {
-      unsubscribe: () => {
-        socket.off(channel, eventHandler);
-      },
-    };
-  },
-  publish: ({ channel, payload }) => {
-    const socket = connectSocket();
-    socket.emit(channel, payload);
-  },
 };
 
 export const socket = initializeSocket();
