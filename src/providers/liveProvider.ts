@@ -4,7 +4,6 @@ import {
   LIVE_PROVIDER_URL,
   TOKEN_KEY,
 } from '@/constants';
-import { getUserLocation } from '@/utility/map';
 import { LiveEvent, LiveProvider } from '@refinedev/core';
 import { io, Socket } from 'socket.io-client';
 
@@ -20,12 +19,6 @@ const initializeSocket = (): Socket => {
 
     socketInstance.on('connect', () => {
       console.log('Socket connected');
-      getUserLocation(
-        (lat, lng) => {
-          socketInstance?.emit('user/position', { latitude: lat, longitude: lng });
-        },
-        () => {}
-      );
     });
 
     socketInstance.on('disconnect', () => {
@@ -45,7 +38,7 @@ const initializeSocket = (): Socket => {
 export const connectSocket = () => {
   const socket = initializeSocket();
   if (!socket.connected) {
-    console.log('Connecting socket@.');
+    console.log('Connecting socket');
     socket.auth = { token: localStorage.getItem(TOKEN_KEY) };
     socket.connect();
   }

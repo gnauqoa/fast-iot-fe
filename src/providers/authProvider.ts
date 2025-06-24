@@ -12,33 +12,6 @@ import { AxiosResponse } from 'axios';
 import { IUser } from 'interfaces/user';
 import { connectSocket } from './liveProvider';
 
-let positionInterval: NodeJS.Timeout | null = null;
-
-const startPositionUpdate = () => {
-  if (positionInterval) return;
-  const updatePosition = () => {
-    import('@/utility/map').then(({ getUserLocation }) => {
-      getUserLocation(
-        (lat: number, lng: number) => {
-          axiosInstance.patch('/users/position', { latitude: lat, longitude: lng });
-        },
-        (error: string) => {
-          console.error(error);
-        }
-      );
-    });
-  };
-  updatePosition();
-  positionInterval = setInterval(updatePosition, 60000);
-};
-
-const stopPositionUpdate = () => {
-  if (positionInterval) {
-    clearInterval(positionInterval);
-    positionInterval = null;
-  }
-};
-
 export const authProvider: AuthProvider = {
   login: async ({ email, password }) => {
     try {
@@ -63,7 +36,7 @@ export const authProvider: AuthProvider = {
         const userRoleId = extractRoleInfoFromToken(data.token);
         const resourcePathToRedirect = userRoleId?.id === 1 ? '/users' : 'devices';
         connectSocket();
-        startPositionUpdate();
+
         return {
           success: true,
           redirectTo: resourcePathToRedirect,
@@ -89,7 +62,6 @@ export const authProvider: AuthProvider = {
     }
   },
   logout: async (): Promise<AuthActionResponse> => {
-    stopPositionUpdate();
     localStorage.removeItem(TOKEN_KEY);
     axiosInstance.defaults.headers.common['Authorization'] = undefined;
     return {
@@ -113,11 +85,9 @@ export const authProvider: AuthProvider = {
   getIdentity: async () => {
     try {
       const data: AxiosResponse<IUser> = await axiosInstance.get(`/auth/me`);
-      startPositionUpdate();
       return data.data;
     } catch (error) {
       console.error('Error occurred during getIdentity:', error);
-      stopPositionUpdate();
       return null;
     }
   },
