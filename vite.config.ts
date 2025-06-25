@@ -10,7 +10,6 @@ export default defineConfig(({ mode }) => {
 
   // Parse VITE_ALLOWED_HOSTS env var (comma-separated)
   const allowedHosts = env.VITE_ALLOWED_HOSTS?.split(',').map(h => h.trim()) || [];
-
   return {
     preview: {
       allowedHosts,

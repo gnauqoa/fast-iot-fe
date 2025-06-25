@@ -1,5 +1,5 @@
 # Build stage
-FROM node:18-alpine as build
+FROM node:18-alpine
 
 WORKDIR /app
 
@@ -15,5 +15,4 @@ COPY . .
 # Build the application
 RUN npm run build
 
-# Start nginx
-CMD ["npm", "start"] 
+CMD ["npm", "run", "start"]
