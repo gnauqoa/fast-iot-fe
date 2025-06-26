@@ -1,141 +1,121 @@
-# Motobike Rescue Admin
+# FastIoT Frontend 🚀
 
-Admin dashboard for the Motobike Rescue application.
+## Overview
+
+FastIoT is an open-source platform designed to simplify and accelerate the development of IoT projects. The frontend, built with **Refine** as the admin panel framework, provides a user-friendly interface for managing IoT devices, monitoring real-time data, and configuring system settings. It integrates seamlessly with the FastIoT backend to deliver an intuitive and responsive experience for developers and end-users. This repository contains the frontend codebase for FastIoT, enabling efficient management of IoT applications through a modern, scalable interface.
+
+## Purpose and Vision
+
+- **Purpose**: The FastIoT frontend aims to provide a streamlined, intuitive interface that simplifies the management and monitoring of IoT projects. It enables developers, especially students and startups, to interact with IoT systems without requiring deep technical knowledge, reducing the complexity of integrating and managing IoT devices.
+- **Vision**: To become a leading open-source frontend for IoT development, empowering users to visualize, control, and scale IoT applications effectively. The frontend is designed to be flexible, secure, and future-ready, supporting advanced features like edge AI integration and multi-language accessibility.
 
 ## Features
 
-- Device management with map visualization
-- Real-time device tracking
-- User management
-- Role-based access control
+- **Admin Panel**: Built with Refine, offering a responsive and intuitive interface for managing IoT devices, data streams, and system configurations.
+- **Real-Time Monitoring**: Displays real-time device status and data flows using MQTT integration with the Mosquitto broker via the backend.
+- **User-Friendly Design**: Follows Material Design principles, optimized for both desktop and mobile browsers, ensuring accessibility for non-technical users.
+- **Multi-Language Support**: Supports multiple languages to enhance accessibility for the global open-source community.
+- **Security**: Integrates with a secure backend, leveraging TLS 1.3 for data transmission and role-based access control for user management.
 
-## Getting Started
+## Project Goals
+
+- Provide a comprehensive open-source frontend to connect developers with IoT devices and data management systems.
+- Enable rapid setup and interaction with IoT projects, minimizing configuration efforts.
+- Offer a simple, easy-to-use interface for developers, particularly students and startups, to manage and prototype IoT applications.
+- Enhance the flexibility and reliability of IoT systems through a modern, scalable frontend integrated with advanced technologies.
+
+## Objectives
+
+- Develop a Refine-based admin panel that integrates seamlessly with the FastIoT backend (NestJS, PostgreSQL, MongoDB, Redis, Mosquitto) for managing IoT projects.
+- Optimize the user experience with an intuitive, responsive interface that requires minimal technical expertise.
+- Support extensibility for future integrations, such as advanced IoT security features and diverse device compatibility.
+- Ensure the frontend is globally accessible with multi-language support and compliance with accessibility standards.
+
+## Success Criteria
+
+- Developers can easily initialize and manage IoT projects through the admin panel, receiving rapid system feedback.
+- The frontend operates reliably with no critical failures during development or deployment.
+- The admin panel is user-friendly, intuitive, and fully functional across popular browsers and mobile devices.
+- Achieves at least 75% successful IoT project management interactions within six months of launch, based on developer and tester feedback.
+- Budget adherence: Total development cost not exceeding 300 million VND, with monthly operational costs under 8 million VND.
+
+## Installation
 
 ### Prerequisites
 
-- Node.js (v18 or higher)
-- npm or yarn
-- Docker and Docker Compose (for containerized deployment)
+- Node.js (v16 or higher)
+- Git
+- Access to the FastIoT backend (running at `http://localhost:3000` or a deployed instance)
 
-### Installation
+### Option 1: Using Docker Compose
 
 1. Clone the repository:
-
    ```bash
-   git clone https://github.com/yourusername/motobike-rescue-admin.git
-   cd motobike-rescue-admin
+   git clone https://github.com/gnauqoa/fast-iot-fe.git
    ```
+2. Navigate to the project directory:
+   ```bash
+   cd fast-iot-fe
+   ```
+3. Copy the Docker environment file:
+   ```bash
+   cp .env-example .env
+   ```
+4. Configure environment variables in `.env` (e.g., backend API URL).
+5. Start the services:
+   ```bash
+   docker-compose up -d
+   ```
+6. The frontend will be available at `http://localhost:3001` (or the configured port).
 
-2. Install dependencies:
+### Option 2: Using npm
 
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/gnauqoa/fast-iot-fe.git
+   ```
+2. Navigate to the project directory:
+   ```bash
+   cd fast-iot-fe
+   ```
+3. Copy the development environment file:
+   ```bash
+   cp .env-example .env
+   ```
+4. Configure environment variables in `.env` (e.g., backend API URL).
+5. Install dependencies:
    ```bash
    npm install
-   # or
-   yarn install
    ```
-
-3. Start the development server:
-
+6. Start the development server:
    ```bash
-   npm run dev
-   # or
-   yarn dev
+   npm run start
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser.
+## Usage
 
-## Code Quality
+- **Admin Panel Access**: Access the admin panel via the browser at `http://localhost:3001` (or the configured port) to manage IoT devices, view real-time data, and configure system settings.
+- **Device Management**: Use the interface to monitor device status, manage connections, and visualize data streams from IoT devices via MQTT.
+- **Customization**: Extend the admin panel by adding new modules or integrating additional features as needed, leveraging Refine's modular architecture.
 
-### Linting
+## Quality Management
 
-This project uses ESLint and Prettier for code quality and formatting.
+- **Standards**:
+  - Adheres to Material Design principles for a consistent and intuitive user experience.
+  - Supports multi-language interfaces for global accessibility.
+  - Ensures compatibility with popular browsers and mobile devices.
+  - Complies with OWASP Top 10 for frontend security, integrating with a secure backend.
+- **Control Procedures**:
+  - Git-based version control with strict pull request and code review processes.
+  - Automated testing (unit and integration tests) via tools like Jest or Cypress.
+  - Monitoring with tools like Prometheus and Grafana (via backend integration(“ for performance tracking.
+  - Role-based access control with two-factor authentication (2FA) for admin users.
 
-To run the linter:
+## Technical Stack
 
-```bash
-npm run lint
-# or
-yarn lint
-```
-
-To automatically fix linting issues:
-
-```bash
-npm run lint:fix
-# or
-yarn lint:fix
-```
-
-To format code with Prettier:
-
-```bash
-npm run format
-# or
-yarn format
-```
-
-### Git Hooks
-
-This project uses Husky to enforce code quality checks before commits. The following checks are run automatically:
-
-- ESLint checks on staged `.js`, `.jsx`, `.ts`, and `.tsx` files
-- Prettier formatting on staged files
-- Type checking with TypeScript
-
-These checks help maintain code quality and consistency throughout the project. If any check fails, the commit will be blocked until the issues are fixed.
-
-#### Troubleshooting Husky Issues
-
-If you encounter issues with Husky, try the following:
-
-1. **"eslint: command not found" error**:
-
-   - Make sure you've installed all dependencies with `npm install`
-   - Try running `npm run prepare` to reinstall Husky hooks
-   - Check that the lint-staged configuration in package.json uses `npx eslint` instead of just `eslint`
-
-2. **Hooks not running**:
-
-   - Ensure the `.husky` directory exists and contains the pre-commit file
-   - Make sure the pre-commit file is executable (`chmod +x .husky/pre-commit`)
-   - Try running `npm run prepare` to reinstall Husky hooks
-
-3. **ESLint configuration issues with ES modules**:
-
-   - If you see an error about `require() of ES Module`, make sure the ESLint configuration file uses the `.cjs` extension
-   - This is necessary because the project is configured as an ES module with `"type": "module"` in package.json
-
-4. **Test Husky setup**:
-   - Run `npm run test:husky` to verify that Husky is working correctly
-
-## Docker Deployment
-
-### Building the Docker Image
-
-```bash
-npm run docker:build
-# or
-yarn docker:build
-```
-
-### Running the Docker Container
-
-```bash
-npm run docker:run
-# or
-yarn docker:run
-```
-
-The application will be available at [http://localhost:3000](http://localhost:3000).
-
-## Project Structure
-
-- `src/components/` - Reusable UI components
-- `src/pages/` - Page components
-- `src/hooks/` - Custom React hooks
-- `src/utils/` - Utility functions
-- `src/interfaces/` - TypeScript interfaces
+- **Framework**: Refine (React-based admin panel framework)
+- **UI Design**: Material Design
 
 ## License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+This project is licensed under the MIT License. See the `LICENSE` file for details.
