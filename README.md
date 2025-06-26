@@ -114,7 +114,7 @@ FastIoT is an open-source platform designed to simplify and accelerate the devel
 ## Technical Stack
 
 - **Framework**: Refine (React-based admin panel framework)
-- **UI Design**: Material Design
+- **UI Design**: Ant Design
 
 ## License
 
