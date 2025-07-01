@@ -44,9 +44,7 @@ export const ButtonNode = memo(({ data }: NodeProps<ButtonNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">
-        {data.label} [{data.channel}]
-      </p>
+      <p className="text-foreground">{data.label}</p>
       <div>
         <Switch
           value={Boolean(data?.value)}

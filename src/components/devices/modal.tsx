@@ -1,9 +1,10 @@
 import { useForm, useSelect } from '@refinedev/antd';
-import { Modal, Button, Form, Input, Select } from 'antd';
+import { Modal, Button, Form, Input, Select, Spin } from 'antd';
 import { IDevice } from '../../interfaces/device';
-import { IUser } from '../../interfaces/user';
-import { useEffect } from 'react';
+import { IUser, UserRole } from '../../interfaces/user';
+import { useEffect, useState, useCallback } from 'react';
 import { ITemplate } from '@/interfaces/template';
+import { useGetIdentity } from '@refinedev/core';
 
 interface DeviceModalProps {
   device?: IDevice;
@@ -12,8 +13,36 @@ interface DeviceModalProps {
   onSuccess?: () => void;
 }
 
+const SelectUser = ({ setUsers }: { setUsers: (users: IUser[]) => void }) => {
+  const { selectProps, query } = useSelect<IUser>({
+    resource: 'users',
+    optionLabel: 'fullName',
+    optionValue: 'id',
+    pagination: { pageSize: 100 },
+    filters: [],
+  });
+
+  useEffect(() => {
+    if (query?.data?.data) {
+      setUsers(query?.data?.data);
+    }
+  }, [query?.data?.data, setUsers]);
+
+  return (
+    <Form.Item name="userId" label="User">
+      <Select {...selectProps} style={{ width: '100%' }} placeholder="Select a user" allowClear />
+    </Form.Item>
+  );
+};
+
 export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalProps) => {
   const isEditMode = !!device;
+  const { data: identity, isLoading } = useGetIdentity<IUser>();
+  const [users, setUsers] = useState<IUser[]>([]);
+
+  const setUsersCallback = useCallback((users: IUser[]) => {
+    setUsers(users);
+  }, []);
 
   const { formProps, saveButtonProps, onFinish } = useForm<IDevice>({
     resource: 'devices',
@@ -25,14 +54,7 @@ export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalPr
     },
   });
 
-  const { selectProps, query } = useSelect<IUser>({
-    resource: 'users',
-    optionLabel: 'fullName',
-    optionValue: 'id',
-    pagination: { pageSize: 100 },
-    filters: [],
-  });
-
+  const isAdmin = identity?.role?.name === UserRole.ADMIN;
   const { selectProps: templateSelectProps, query: templateQuery } = useSelect<ITemplate>({
     resource: 'templates',
     optionLabel: 'name',
@@ -43,13 +65,15 @@ export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalPr
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
-    const { userId, templateId, ...rest } = values;
-
+    const { templateId, userId, ...rest } = values;
+    console.log({ users, userId });
     onFinish({
       ...rest,
-      user: query?.data?.data.find((user: IUser) => user.id === userId),
-      userId: userId,
-      template: templateQuery?.data?.data.find((template: ITemplate) => template.id === templateId),
+      user: users.find(user => user.id === values.userId),
+      userId: values.userId,
+      template: templateQuery?.data?.data?.find(
+        (template: ITemplate) => template.id === templateId
+      ),
       templateId: templateId,
     });
   };
@@ -60,14 +84,29 @@ export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalPr
         return formProps.form?.setFieldsValue({
           name: device.name,
           userId: device.userId,
+          templateId: device.template?.id,
         });
       }
       formProps.form?.setFieldsValue({
         name: '',
-        userId: undefined,
+        userId: isAdmin ? undefined : identity?.id,
+        templateId: undefined,
       });
     }
-  }, [open, isEditMode, formProps.form, device?.name, device?.userId]);
+  }, [
+    open,
+    isEditMode,
+    formProps.form,
+    device?.name,
+    device?.userId,
+    device?.template?.id,
+    isAdmin,
+    identity,
+  ]);
+
+  if (isLoading) {
+    return <Spin />;
+  }
 
   return (
     <Modal
@@ -94,14 +133,7 @@ export const DeviceModal = ({ device, open, onCancel, onSuccess }: DeviceModalPr
             <Input />
           </Form.Item>
 
-          <Form.Item name="userId" label="User">
-            <Select
-              {...selectProps}
-              style={{ width: '100%' }}
-              placeholder="Select a user"
-              allowClear
-            />
-          </Form.Item>
+          {isAdmin && <SelectUser setUsers={setUsersCallback} />}
 
           <Form.Item name="templateId" label="Template">
             <Select

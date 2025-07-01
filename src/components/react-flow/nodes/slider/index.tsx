@@ -56,9 +56,7 @@ export const SliderNode = memo(({ data }: NodeProps<ISliderNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">
-        {data.label} [{data.channel}]
-      </p>
+      <p className="text-foreground">{data.label}</p>
       <div className="w-full nopan" style={{ pointerEvents: 'all' }}>
         <Slider
           value={currentValue}

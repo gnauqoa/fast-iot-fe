@@ -1,25 +1,20 @@
 import { Table, Tag, Input, Select, Button, Form, Space } from 'antd';
-import { SearchOutlined } from '@ant-design/icons';
+import { SearchOutlined, FilterOutlined } from '@ant-design/icons';
 import { useEffect, useState } from 'react';
 import { IDevice, DeviceStatus, statusColors } from '@/interfaces/device';
-import { socket } from '@/utility/socket';
-import { CrudFilters, Link } from '@refinedev/core';
+import { CrudFilters, Link, useGetIdentity } from '@refinedev/core';
 import { capitalize } from '@/utility/text';
 import { EditButton, ShowButton, DeleteButton, useTable } from '@refinedev/antd';
-import {
-  HANDLE_DEVICE_DATA_CHANNEL,
-  JOIN_DEVICE_ROOM_CHANNEL,
-  LEAVE_DEVICE_ROOM_CHANNEL,
-} from '@/constants';
 import { DeviceModal } from '@/components/devices';
+import { IUser, UserRole } from '@/interfaces/user';
 
 export const DeviceList = () => {
+  const { data: identity } = useGetIdentity<IUser>();
   const { tableProps, searchFormProps, tableQuery } = useTable<IDevice>({
     resource: 'devices',
     syncWithLocation: true,
     onSearch: params => {
       const filters: CrudFilters = [];
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       const { name, status } = params as any;
 
       if (name) {
@@ -34,7 +29,7 @@ export const DeviceList = () => {
         filters.push({
           field: 'status',
           operator: 'eq',
-          value: status,
+          value: status === DeviceStatus.Offline ? 0 : 1,
         });
       }
 
@@ -47,12 +42,6 @@ export const DeviceList = () => {
   const [open, setOpen] = useState(false);
   const [editDevice, setEditDevice] = useState<IDevice | undefined>(undefined);
 
-  const handleDeviceUpdate = (updatedDevice: IDevice) => {
-    setDevices(prevDevices =>
-      prevDevices.map(d => (d.id === updatedDevice.id ? { ...updatedDevice, ...d } : d))
-    );
-  };
-
   const handleCloseModal = () => {
     setOpen(false);
     setEditDevice(undefined);
@@ -63,17 +52,6 @@ export const DeviceList = () => {
 
     const newDevices = tableQuery.data.data;
     setDevices(newDevices);
-    for (const device of newDevices) {
-      socket.emit(JOIN_DEVICE_ROOM_CHANNEL, device.id);
-    }
-    socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
-
-    return () => {
-      socket.off(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
-      for (const device of newDevices) {
-        socket.emit(LEAVE_DEVICE_ROOM_CHANNEL, device.id);
-      }
-    };
   }, [tableQuery.data?.data]);
 
   return (
@@ -87,7 +65,7 @@ export const DeviceList = () => {
           <Select
             placeholder="Filter by status"
             allowClear
-            style={{ width: 150 }}
+            style={{ width: 180 }}
             options={Object.values(DeviceStatus).map((status: DeviceStatus) => ({
               label: (
                 <Tag color={statusColors[status]} style={{ margin: 0 }}>
@@ -100,8 +78,8 @@ export const DeviceList = () => {
         </Form.Item>
 
         <Form.Item>
-          <Button type="primary" htmlType="submit">
-            Search
+          <Button type="primary" htmlType="submit" icon={<FilterOutlined />}>
+            Filter
           </Button>
         </Form.Item>
 
@@ -116,7 +94,9 @@ export const DeviceList = () => {
           Create Device
         </Button>
       </Form>
-      <Table {...tableProps} dataSource={devices} rowKey="id">
+
+      {/* Devices Table */}
+      <Table {...tableProps} dataSource={devices} rowKey="id" scroll={{ x: 800 }}>
         <Table.Column title="ID" dataIndex="id" key="id" width={60} />
         <Table.Column title="Name" dataIndex="name" key="name" />
         <Table.Column
@@ -124,7 +104,7 @@ export const DeviceList = () => {
           dataIndex="status"
           key="status"
           render={(status: DeviceStatus) => (
-            <Tag color={statusColors[status]} style={{ margin: 0 }}>
+            <Tag color={statusColors[status]} style={{ margin: 0, fontWeight: 'bold' }}>
               {capitalize(status)}
             </Tag>
           )}
@@ -145,6 +125,9 @@ export const DeviceList = () => {
           dataIndex="lastUpdate"
           key="lastUpdate"
           render={(date: string) => (date ? new Date(date).toLocaleString() : '-')}
+          sorter={(a: IDevice, b: IDevice) =>
+            new Date(a.lastUpdate).getTime() - new Date(b.lastUpdate).getTime()
+          }
         />
         <Table.Column
           title="Actions"
@@ -154,7 +137,6 @@ export const DeviceList = () => {
               <EditButton
                 hideText
                 size="small"
-                recordItemId={record.id}
                 onClick={() => {
                   setEditDevice(record);
                   setOpen(true);
@@ -166,6 +148,8 @@ export const DeviceList = () => {
           )}
         />
       </Table>
+
+      {/* Device Modal */}
       <DeviceModal
         open={open}
         device={editDevice}

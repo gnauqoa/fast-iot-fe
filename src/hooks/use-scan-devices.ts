@@ -1,6 +1,6 @@
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { useCustom } from '@refinedev/core';
-import { IDevice } from '@/interfaces/device';
+import { IDevice, DeviceStatus } from '@/interfaces/device';
 
 export interface ScanQueryParams {
   latitude: number;
@@ -8,6 +8,7 @@ export interface ScanQueryParams {
   page?: number;
   limit?: number;
   radius?: number;
+  status?: DeviceStatus;
 }
 
 export const DEFAULT_SCAN_PARAMS: ScanQueryParams = {
@@ -21,34 +22,52 @@ export const DEFAULT_SCAN_PARAMS: ScanQueryParams = {
 export const useScanDevice = (initialParams: ScanQueryParams = DEFAULT_SCAN_PARAMS) => {
   const [queryParams, setQueryParams] = useState<ScanQueryParams>(initialParams);
 
-  const { data, isFetching } = useCustom<{ data: IDevice[] }>({
+  const { data, isFetching, refetch } = useCustom<{ data: IDevice[] }>({
     url: 'devices/scan',
     method: 'get',
-
     config: {
-      query: queryParams,
+      query: {
+        latitude: queryParams.latitude,
+        longitude: queryParams.longitude,
+        radius: queryParams.radius,
+        page: queryParams.page,
+        limit: queryParams.limit,
+        ...(queryParams.status !== undefined && {
+          status: queryParams.status,
+        }),
+      },
     },
     queryOptions: {
       enabled: true,
     },
   });
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const handleScan = async (values: any) => {
-    const newParams = {
-      ...queryParams,
-      radius: values.radius * 1000, // Convert km to meters
-    };
-    setQueryParams(newParams);
-  };
+  const handleScan = useCallback(async (values: { radius: number; status?: DeviceStatus }) => {
+    setQueryParams(prev => {
+      const newParams: ScanQueryParams = {
+        ...prev,
+        radius: values.radius * 1000, // Convert km to meters
+      };
 
-  const updateLocation = (latitude: number, longitude: number) => {
+      // Add status filter if provided
+      if (values.status !== undefined) {
+        newParams.status = values.status;
+      } else {
+        // Remove status filter if not provided
+        delete newParams.status;
+      }
+
+      return newParams;
+    });
+  }, []);
+
+  const updateLocation = useCallback((latitude: number, longitude: number) => {
     setQueryParams(prev => ({
       ...prev,
       latitude,
       longitude,
     }));
-  };
+  }, []);
 
   return {
     queryParams,
@@ -57,5 +76,6 @@ export const useScanDevice = (initialParams: ScanQueryParams = DEFAULT_SCAN_PARA
     data: data?.data.data || [],
     handleScan,
     updateLocation,
+    refetch,
   };
 };

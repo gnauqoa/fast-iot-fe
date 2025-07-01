@@ -6,7 +6,6 @@ import {
   useLogin,
   useTranslate,
 } from '@refinedev/core';
-import { ThemedTitle } from '@refinedev/antd';
 import { containerStyles, layoutStyles, titleStyles } from '@/components/styles/authStyles';
 import {
   Row,
@@ -23,6 +22,7 @@ import {
   theme,
 } from 'antd';
 import { ColorModeContext } from '@/contexts/color-mode';
+import AppLogo from '@/components/app-logo';
 
 const { Title } = Typography;
 const { useToken } = theme;
@@ -50,25 +50,28 @@ export const LoginPage: React.FC<LoginProps> = ({
     <Layout style={layoutStyles} {...(wrapperProps ?? {})}>
       <Row justify="center" align="middle" style={{ height: '100vh' }}>
         <Col xs={22}>
-          {title !== false && (
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'center',
-                marginBottom: '32px',
-                fontSize: '32px',
-                fontWeight: 700,
-                color: pageTitleColor,
-              }}
-            >
-              {title ?? <ThemedTitle collapsed={false} text={title} />}
+          <div
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              alignItems: 'center',
+              justifyContent: 'center',
+              gap: '24px',
+              marginBottom: '32px',
+            }}
+          >
+            <div className="w-[5rem] h-[5rem]">
+              <AppLogo />
             </div>
-          )}
+            <Title level={3} style={{ color: token.colorWhite, ...titleStyles }}>
+              {title}
+            </Title>
+          </div>
 
           <Card
             title={
               <Title level={3} style={{ color: token.colorPrimaryTextHover, ...titleStyles }}>
-                Admin
+                Login
               </Title>
             }
             style={{
@@ -113,7 +116,7 @@ export const LoginPage: React.FC<LoginProps> = ({
 
               <Form.Item>
                 <Button type="primary" size="large" htmlType="submit" loading={isLoading} block>
-                  Đăng nhập
+                  Login
                 </Button>
               </Form.Item>
             </Form>

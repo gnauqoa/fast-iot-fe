@@ -1,9 +1,12 @@
 import { useState } from 'react';
 import { useForm } from '@refinedev/antd';
-import { Modal, Button, Form, Input, Select, Tag } from 'antd';
-import { IUser, UserRole, UserStatus } from '@/interfaces/user';
+import { Modal, Button, Form, Input, Select, Tag, Spin } from 'antd';
+import { IUser, UserRole } from '@/interfaces/user';
+import { useStatusData } from '@/hooks/use-status-data';
+import { stringToHexColor } from '@/utility/color';
 
 export const UserCreateModal = () => {
+  const { statuses, loading } = useStatusData();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const { form, formProps, saveButtonProps, onFinish } = useForm<IUser>({
     onMutationSuccess: () => setIsModalOpen(false),
@@ -15,20 +18,17 @@ export const UserCreateModal = () => {
     [UserRole.USER]: 'blue',
   };
 
-  const statusColors: Record<UserStatus, string> = {
-    [UserStatus.ACTIVE]: 'green',
-    [UserStatus.INACTIVE]: 'red',
-  };
-
   // Xử lý submit form
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     onFinish({
       ...values,
       role: values.role === UserRole.USER ? 2 : 1,
-      status: values.status === UserStatus.ACTIVE ? 1 : 2,
+      status: statuses?.find(status => status.name === values.status)?.id,
     });
   };
+
+  if (loading) return <Spin />;
 
   return (
     <>
@@ -61,7 +61,7 @@ export const UserCreateModal = () => {
             password: '',
             confirmPassword: '',
             role: UserRole.USER,
-            status: UserStatus.ACTIVE,
+            status: statuses?.[0]?.id,
           }}
           onFinish={onSubmit}
         >
@@ -139,9 +139,9 @@ export const UserCreateModal = () => {
             rules={[{ required: true, message: 'Status is required' }]}
           >
             <Select
-              options={Object.values(UserStatus).map(status => ({
-                label: <Tag color={statusColors[status]}>{status}</Tag>,
-                value: status,
+              options={statuses?.map(status => ({
+                label: <Tag color={stringToHexColor(status.name)}>{status.name}</Tag>,
+                value: status.id,
               }))}
             />
           </Form.Item>

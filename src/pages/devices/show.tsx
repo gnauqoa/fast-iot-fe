@@ -1,6 +1,6 @@
 import { useCallback, useContext, useEffect, useState } from 'react';
 import { Link, useShow } from '@refinedev/core';
-import { Show } from '@refinedev/antd';
+import { DeleteButton, EditButton, Show } from '@refinedev/antd';
 import { Badge, Button, Flex, message, Typography } from 'antd';
 import { EyeOutlined } from '@ant-design/icons';
 import { Background, ColorMode, Controls, Node, ReactFlow } from '@xyflow/react';
@@ -18,6 +18,10 @@ import {
 import { axiosInstance } from '@refinedev/nestjsx-crud';
 import useReactFlow from '@/hooks/use-react-flow';
 import { ColorModeContext } from '@/contexts/color-mode';
+import { MapPinned } from 'lucide-react';
+import { DeviceMapModal } from '@/components/maps';
+import { useNavigate } from 'react-router';
+import { DeviceModal } from '@/components/devices';
 
 dayjs.extend(relativeTime);
 
@@ -26,6 +30,8 @@ const { Title, Text } = Typography;
 export const DeviceShow = () => {
   const { query: queryResult } = useShow<IDevice>({});
   const { data, isLoading } = queryResult;
+  const [open, setOpen] = useState(false);
+  const [editDevice, setEditDevice] = useState(false);
   const record = data?.data;
 
   const [device, setDevice] = useState<IDevice | null>(null);
@@ -41,18 +47,17 @@ export const DeviceShow = () => {
     onConnect,
     setNodes,
     setEdges,
-    onViewportChange,
     onContextMenu,
     onPaneClick,
-    ref,
     viewport,
+    ref,
+    onViewportChange,
   } = useReactFlow();
 
   const updateView = useCallback(
     (updated: IDevice) => {
       if (!record?.template?.desktopPrototype) return;
       const deviceData = device || record;
-
       const updateDevice = (updated: Partial<IDevice>) => {
         const newDevice = { ...deviceData, ...updated };
         setDevice(newDevice);
@@ -80,9 +85,9 @@ export const DeviceShow = () => {
         const channelPrototype = deviceData.template.channels.find(ch => ch.name === name);
         if (!channelPrototype) return;
 
-        updateDevice({
-          channels: deviceData.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
-        });
+        // updateDevice({
+        //   channels: deviceData.channels.map(ch => (ch.name === name ? { ...ch, value } : ch)),
+        // });
         socket.emit('device/update', {
           id: deviceData.id,
           channels: [
@@ -96,7 +101,7 @@ export const DeviceShow = () => {
 
       updateDevice(updated);
     },
-    [device, record]
+    [device, record, setNodes, setEdges]
   );
 
   // Sync updated device from socket event
@@ -106,7 +111,7 @@ export const DeviceShow = () => {
         updateView(updated);
       }
     },
-    [record?.id]
+    [record?.id, updateView]
   );
 
   // Fetch the device token from API
@@ -125,7 +130,6 @@ export const DeviceShow = () => {
   // Setup initial device state and socket listeners
   useEffect(() => {
     if (!record) return;
-
     updateView(record);
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
     socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
@@ -134,14 +138,27 @@ export const DeviceShow = () => {
       socket.emit(LEAVE_DEVICE_ROOM_CHANNEL, record.id);
       socket.off(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
     };
-  }, [record, handleDeviceUpdate]);
+  }, [record, handleDeviceUpdate, updateView]);
 
   if (!device) return <></>;
 
   return (
-    <Show isLoading={isLoading}>
+    <Show
+      headerProps={{ style: { paddingBlockStart: 0 } }}
+      isLoading={isLoading}
+      headerButtons={[]}
+      goBack={false}
+      title={''}
+    >
+      <DeviceMapModal open={open} onClose={() => setOpen(false)} device={device} />
+      <DeviceModal
+        open={editDevice}
+        device={device}
+        onCancel={() => setEditDevice(false)}
+        onSuccess={() => setEditDevice(false)}
+      />
       <Flex vertical gap={12}>
-        <Flex gap={12} align="center">
+        <Flex gap={12} align="center" style={{ width: '100%' }}>
           <Title level={3} style={{ marginBottom: 0 }}>
             {device.name}
           </Title>
@@ -159,9 +176,21 @@ export const DeviceShow = () => {
               </Title>
             </>
           )}
+          <Flex
+            style={{
+              marginLeft: 'auto',
+              gap: 8,
+            }}
+          >
+            <EditButton
+              onClick={() => {
+                setEditDevice(true);
+              }}
+            />
+            <DeleteButton recordItemId={device.id} />
+          </Flex>
         </Flex>
 
-        {/* Device Token Section */}
         <Flex vertical>
           <Flex gap={8} align="center">
             <Title level={5} style={{ marginBottom: 0 }}>
@@ -174,13 +203,21 @@ export const DeviceShow = () => {
             ) : (
               <>
                 <Text type="secondary">Click to reveal</Text>
-                <Button icon={<EyeOutlined />} onClick={fetchDeviceToken} />
+                <Button icon={<EyeOutlined size={14} />} onClick={fetchDeviceToken} />
               </>
             )}
           </Flex>
+          <Flex gap={8} align="center">
+            <Title level={5} style={{ marginBottom: 0 }}>
+              Position:
+            </Title>
+            <Text>
+              {device.position.coordinates[1]}, {device.position.coordinates[0]}
+            </Text>
+            <Button icon={<MapPinned size={14} />} onClick={() => setOpen(true)} />
+          </Flex>
         </Flex>
 
-        {/* Device Owner Link */}
         <Flex>
           <Link to={`/users/${device.userId}`}>
             <Title level={5} style={{ marginBottom: 0 }}>
@@ -190,7 +227,6 @@ export const DeviceShow = () => {
         </Flex>
       </Flex>
 
-      {/* React Flow Graph */}
       <div className="flex flex-col w-full h-[50vh] relative">
         <ReactFlow
           nodesDraggable={false}
@@ -199,16 +235,16 @@ export const DeviceShow = () => {
           ref={ref}
           colorMode={mode as ColorMode}
           nodes={nodes}
+          defaultViewport={viewport}
+          onViewportChange={onViewportChange}
           edges={edges}
           onInit={setRfInstance}
           onNodesChange={onNodesChange}
           onNodeClick={onNodeClick}
           onEdgesChange={onEdgesChange}
           onConnect={onConnect}
-          onViewportChange={onViewportChange}
           onContextMenu={onContextMenu}
           onPaneClick={onPaneClick}
-          viewport={viewport}
           nodeTypes={nodeTypes}
           fitView
         >

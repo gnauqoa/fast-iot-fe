@@ -1,7 +1,21 @@
 import { useEffect, useState, useRef } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
-import { Input, Button, Form, Space, Flex, Tooltip, theme } from 'antd';
+import {
+  Input,
+  Button,
+  Form,
+  Space,
+  Flex,
+  Tooltip,
+  theme,
+  Select,
+  Tag,
+  Card,
+  Row,
+  Col,
+  Statistic,
+} from 'antd';
 import { useScanDevice, DEFAULT_SCAN_PARAMS } from '@/hooks/use-scan-devices';
 import {
   deviceIcon,
@@ -11,12 +25,17 @@ import {
   OverlayPosition,
 } from '@/components/maps';
 import { MapClickHandler, getUserLocation } from '@/utility/map';
-import { RightOutlined, LeftOutlined } from '@ant-design/icons';
-import { IDevice } from '@/interfaces/device';
-import { DeviceList } from '@/components/maps/list';
+import { RightOutlined, LeftOutlined, BarChartOutlined, FilterOutlined } from '@ant-design/icons';
+import { IDevice, DeviceStatus, statusColors } from '@/interfaces/device';
+import { DeviceMaps } from '@/components/maps/device-maps';
 import { capitalize } from '@/utility/text';
+import { useGetIdentity } from '@refinedev/core';
+import { IUser, UserRole } from '@/interfaces/user';
 
 export const DeviceMap = () => {
+  const { data: identity } = useGetIdentity<IUser>();
+  const isAdmin = identity?.role?.name === UserRole.ADMIN;
+
   const [userLocation, setUserLocation] = useState<[number, number]>([
     DEFAULT_SCAN_PARAMS.latitude,
     DEFAULT_SCAN_PARAMS.longitude,
@@ -36,7 +55,20 @@ export const DeviceMap = () => {
   const deviceItemRefs = useRef<Record<number, HTMLDivElement | null>>({});
   const { token } = theme.useToken();
 
+  // Admin filtering states
+  const [statusFilter, setStatusFilter] = useState<DeviceStatus | null>(null);
+  const [showStats, setShowStats] = useState(isAdmin);
+
   const { isLoading, data: devices, handleScan, updateLocation } = useScanDevice();
+
+  // Calculate device statistics for admin (now using backend-filtered data)
+  const deviceStats = devices
+    ? {
+        total: devices.length,
+        online: devices.filter(d => d.status === DeviceStatus.Online).length,
+        offline: devices.filter(d => d.status === DeviceStatus.Offline).length,
+      }
+    : { total: 0, online: 0, offline: 0 };
 
   useEffect(() => {
     if (!locationInitialized.current) {
@@ -54,6 +86,22 @@ export const DeviceMap = () => {
       );
     }
   }, [updateLocation]);
+
+  useEffect(() => {
+    if (mapRef.current && userLocation) {
+      mapRef.current.setView(userLocation, 14);
+    }
+  }, [userLocation, mapRef]);
+
+  // Trigger scan when location is initialized or when status filter changes
+  useEffect(() => {
+    if (locationInitialized.current) {
+      handleScan({
+        radius: scanRadius,
+        status: statusFilter || undefined,
+      });
+    }
+  }, [statusFilter, handleScan, scanRadius]); // Include scanRadius dependency
 
   const handleMapClick = (lat: number, lng: number) => {
     if (isPickingLocation) {
@@ -83,8 +131,11 @@ export const DeviceMap = () => {
   };
 
   const handleScanWithRadius = async (values: { radius: number }) => {
+    await handleScan({
+      radius: values.radius,
+      status: statusFilter || undefined,
+    });
     setScanRadius(values.radius);
-    await handleScan(values);
   };
 
   const toggleDeviceList = () => {
@@ -137,7 +188,69 @@ export const DeviceMap = () => {
   }
 
   return (
-    <>
+    <div className="flex flex-col">
+      {isAdmin && showStats && (
+        <Card style={{ marginBottom: 16 }}>
+          <Row gutter={16}>
+            {/* Always show total count */}
+            <Col span={statusFilter ? 24 : 8}>
+              <Statistic
+                title={statusFilter ? `Found (${capitalize(statusFilter)})` : 'Total Found'}
+                value={deviceStats.total}
+                prefix={<BarChartOutlined />}
+                valueStyle={{
+                  color: statusFilter ? statusColors[statusFilter] : token.colorText,
+                }}
+              />
+            </Col>
+
+            {/* Only show breakdown when no status filter is active */}
+            {!statusFilter && (
+              <>
+                <Col span={8}>
+                  <Statistic
+                    title="Online"
+                    value={deviceStats.online}
+                    valueStyle={{ color: statusColors[DeviceStatus.Online] }}
+                    prefix={
+                      <div
+                        style={{
+                          width: 8,
+                          height: 8,
+                          backgroundColor: statusColors[DeviceStatus.Online],
+                          borderRadius: '50%',
+                          display: 'inline-block',
+                          marginRight: 4,
+                        }}
+                      />
+                    }
+                  />
+                </Col>
+                <Col span={8}>
+                  <Statistic
+                    title="Offline"
+                    value={deviceStats.offline}
+                    valueStyle={{ color: statusColors[DeviceStatus.Offline] }}
+                    prefix={
+                      <div
+                        style={{
+                          width: 8,
+                          height: 8,
+                          backgroundColor: statusColors[DeviceStatus.Offline],
+                          borderRadius: '50%',
+                          display: 'inline-block',
+                          marginRight: 4,
+                        }}
+                      />
+                    }
+                  />
+                </Col>
+              </>
+            )}
+          </Row>
+        </Card>
+      )}
+
       <Form
         form={form}
         layout="inline"
@@ -148,6 +261,29 @@ export const DeviceMap = () => {
         <Form.Item name="radius" label="Radius (km)">
           <Input type="number" min={0} max={1000} style={{ width: 150 }} />
         </Form.Item>
+
+        {isAdmin && (
+          <Form.Item label="Status Filter">
+            <Select
+              placeholder="All statuses"
+              allowClear
+              style={{ width: 150 }}
+              value={statusFilter}
+              onChange={value => {
+                setStatusFilter(value || null);
+              }}
+              options={Object.values(DeviceStatus).map((status: DeviceStatus) => ({
+                label: (
+                  <Tag color={statusColors[status]} style={{ margin: 0 }}>
+                    {capitalize(String(status))}
+                  </Tag>
+                ),
+                value: status,
+              }))}
+            />
+          </Form.Item>
+        )}
+
         <Flex style={{ marginLeft: 'auto' }} vertical gap={12}>
           <Button
             type="primary"
@@ -155,22 +291,33 @@ export const DeviceMap = () => {
             loading={isLoading}
             style={{ marginLeft: 'auto' }}
             disabled={isPickingLocation}
+            icon={<FilterOutlined />}
           >
-            Find
+            Find Devices
           </Button>
           <Space>
-            {' '}
+            {isAdmin && (
+              <Button
+                onClick={() => setShowStats(!showStats)}
+                icon={<BarChartOutlined />}
+                size="small"
+              >
+                {showStats ? 'Hide Stats' : 'Stats'}
+              </Button>
+            )}
             {pickedLocation && (
-              <Button onClick={removePickedLocation} danger>
+              <Button onClick={removePickedLocation} danger size="small">
                 Remove
               </Button>
             )}
             {isPickingLocation ? (
-              <Button onClick={cancelPickingLocation} danger>
+              <Button onClick={cancelPickingLocation} danger size="small">
                 Cancel
               </Button>
             ) : (
-              <Button onClick={startPickingLocation}>Pick Location</Button>
+              <Button onClick={startPickingLocation} size="small">
+                Pick Location
+              </Button>
             )}
           </Space>
         </Flex>
@@ -178,8 +325,8 @@ export const DeviceMap = () => {
 
       <div
         style={{
-          height: 'calc(100vh - 250px)',
           position: 'relative',
+          height: 'calc(100vh - 250px)',
           display: 'flex',
         }}
       >
@@ -305,7 +452,7 @@ export const DeviceMap = () => {
           }}
         >
           {showDeviceList && (
-            <DeviceList
+            <DeviceMaps
               devices={devices}
               selectedDeviceId={selectedDeviceId}
               onDeviceHover={handleDeviceHover}
@@ -315,6 +462,6 @@ export const DeviceMap = () => {
           )}
         </div>
       </div>
-    </>
+    </div>
   );
 };

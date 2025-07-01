@@ -49,9 +49,7 @@ export const SelectNode = memo(({ data }: NodeProps<SelectNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">
-        {data.label} [{data.channel}]
-      </p>
+      <p className="text-foreground">{data.label}</p>
       <div>
         <Select
           style={{

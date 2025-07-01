@@ -7,22 +7,21 @@ import {
   DeleteButton,
 } from '@refinedev/antd';
 import { SearchOutlined } from '@ant-design/icons';
-import { Table, Space, Form, Input, Button, Tag, Select } from 'antd';
-import { IUser, UserStatus, UserRole } from '@/interfaces/user';
+import { Table, Space, Form, Input, Button, Tag, Select, Avatar } from 'antd';
+import { IUser, UserRole } from '@/interfaces/user';
 import { CrudFilters, HttpError, LogicalFilter, useSubscription } from '@refinedev/core';
 import { UserCreateModal } from '@/components/users';
+import ChangePasswordModal from '@/components/change-password-modal';
+import { stringToHexColor } from '@/utility/color';
+import { useStatusData } from '@/hooks/use-status-data';
 
 const roleColors: Record<UserRole, string> = {
   [UserRole.ADMIN]: 'gold',
   [UserRole.USER]: 'blue',
 };
 
-const statusColors: Record<UserStatus, string> = {
-  [UserStatus.ACTIVE]: 'green',
-  [UserStatus.INACTIVE]: 'red',
-};
-
 export const UserList = () => {
+  const { statuses } = useStatusData();
   const { tableProps, searchFormProps, sorter, filters } = useTable<
     IUser,
     HttpError,
@@ -113,13 +112,13 @@ export const UserList = () => {
             placeholder="Select Status"
             allowClear
             style={{ width: 150 }}
-            options={Object.values(UserStatus).map(status => ({
+            options={statuses?.map(status => ({
               label: (
-                <Tag color={statusColors[status]} style={{ margin: 0 }}>
-                  {status}
+                <Tag color={stringToHexColor(status.name)} style={{ margin: 0 }}>
+                  {status.name}
                 </Tag>
               ),
-              value: status,
+              value: status.id,
             }))}
           />
         </Form.Item>
@@ -138,7 +137,16 @@ export const UserList = () => {
       <Table {...tableProps} rowKey="id">
         <Table.Column dataIndex="id" title="ID" />
         <Table.Column dataIndex="email" title="Email" />
-        <Table.Column dataIndex="fullName" title="Full Name" />
+        <Table.Column
+          dataIndex="fullName"
+          title="Full Name"
+          render={(fullName: string, record: IUser) => (
+            <Space>
+              <Avatar src={record.avatar || ''} />
+              {fullName}
+            </Space>
+          )}
+        />
         <Table.Column
           dataIndex={['role', 'name']}
           title="Role"
@@ -147,7 +155,7 @@ export const UserList = () => {
         <Table.Column
           dataIndex={['status', 'name']}
           title="Status"
-          render={(status: UserStatus) => <Tag color={statusColors[status]}>{status}</Tag>}
+          render={(status: string) => <Tag color={stringToHexColor(status)}>{status}</Tag>}
         />
         <Table.Column
           dataIndex="createdAt"
@@ -162,6 +170,7 @@ export const UserList = () => {
           render={(_, record) => (
             <Space>
               <EditButton hideText size="small" recordItemId={record.id} />
+              <ChangePasswordModal recordItemId={record?.id as string} />
               <DeleteButton hideText size="small" recordItemId={record.id} />
             </Space>
           )}

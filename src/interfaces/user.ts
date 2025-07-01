@@ -11,14 +11,9 @@ export enum UserRole {
 
 export type IStatus = {
   id: number;
-  name: UserStatus;
+  name: string;
   __entity: 'StatusEntity';
 };
-
-export enum UserStatus {
-  ACTIVE = 'Active',
-  INACTIVE = 'Inactive',
-}
 
 export type IUser = {
   id: number;
@@ -26,8 +21,11 @@ export type IUser = {
   provider: string;
   socialId: string | null;
   fullName: string;
+  firstName: string;
+  lastName: string;
   role: IRole;
   status: IStatus;
+  avatar: string | null;
   createdAt: string;
   updatedAt: string;
   deletedAt: string | null;

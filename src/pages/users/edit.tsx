@@ -1,49 +1,50 @@
 import { Edit, useForm } from '@refinedev/antd';
-import { Form, Input, Select, Tag } from 'antd';
-import { IUser, UserRole, UserStatus } from '@/interfaces/user';
+import { Form, Input, Select, Tag, Spin } from 'antd';
+import { IUser, UserRole } from '@/interfaces/user';
+import { useEffect } from 'react';
+import { useStatusData } from '@/hooks/use-status-data';
+import { stringToHexColor } from '@/utility/color';
 
 export const UserEdit = () => {
-  const { formProps, saveButtonProps, query, onFinish } = useForm<IUser>({
+  const { statuses, loading } = useStatusData();
+  const { formProps, saveButtonProps, query, onFinish, form } = useForm<IUser>({
     mutationMode: 'optimistic',
+    redirect: false,
   });
 
-  const userData = query?.data?.data; // Dữ liệu user từ API
+  const userData = query?.data?.data;
 
-  // Màu sắc của Role và Status trong Select
   const roleColors: Record<UserRole, string> = {
     [UserRole.ADMIN]: 'gold',
     [UserRole.USER]: 'blue',
   };
 
-  const statusColors: Record<UserStatus, string> = {
-    [UserStatus.ACTIVE]: 'green',
-    [UserStatus.INACTIVE]: 'red',
-  };
+  useEffect(() => {
+    if (userData) {
+      form.setFieldsValue({
+        fullName: userData.fullName,
+        email: userData.email,
+        role: userData.role?.name,
+        status: userData.status?.name,
+        createdAt: userData.createdAt,
+      });
+    }
+  }, [userData, form]);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const onSubmit = (values: any) => {
     onFinish({
       ...values,
-      role: values.role === UserRole.USER ? 2 : 1,
-
-      status: values.status === UserStatus.ACTIVE ? 1 : 2,
+      role: { id: values.role === UserRole.USER ? 2 : 1, name: values.role },
+      status: { id: values.status, name: values.status },
     });
   };
 
+  if (loading) return <Spin />;
+
   return (
     <Edit saveButtonProps={saveButtonProps}>
-      <Form
-        {...formProps}
-        layout="vertical"
-        initialValues={{
-          fullName: userData?.fullName || '',
-          email: userData?.email || '',
-          role: userData?.role.name || UserRole.USER,
-          status: userData?.status.name || UserStatus.ACTIVE,
-          createdAt: userData?.createdAt || '',
-        }}
-        onFinish={onSubmit}
-      >
+      <Form {...formProps} layout="vertical" onFinish={onSubmit}>
         <Form.Item
           label="Full Name"
           name="fullName"
@@ -76,16 +77,15 @@ export const UserEdit = () => {
           />
         </Form.Item>
 
-        {/* Status */}
         <Form.Item
           label="Status"
           name="status"
           rules={[{ required: true, message: 'Status is required' }]}
         >
           <Select
-            options={Object.values(UserStatus).map(status => ({
-              label: <Tag color={statusColors[status]}>{status}</Tag>,
-              value: status,
+            options={statuses?.map(status => ({
+              label: <Tag color={stringToHexColor(status.name)}>{status.name}</Tag>,
+              value: status.id,
             }))}
           />
         </Form.Item>

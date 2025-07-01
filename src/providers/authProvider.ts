@@ -84,8 +84,12 @@ export const authProvider: AuthProvider = {
   },
   getIdentity: async () => {
     try {
-      const data: AxiosResponse<IUser> = await axiosInstance.get(`/auth/me`);
-      return data.data;
+      const data: AxiosResponse<IUser & { firstName: string; lastName: string }> =
+        await axiosInstance.get(`/auth/me`);
+      return {
+        ...data.data,
+        fullName: data.data.firstName + ' ' + data.data.lastName,
+      };
     } catch (error) {
       console.error('Error occurred during getIdentity:', error);
       return null;

@@ -41,9 +41,7 @@ export const LabelNode = memo(({ data }: NodeProps<LabelNode>) => {
         justifyContent: 'space-between',
       }}
     >
-      <p className="text-foreground">
-        {data.label} [{data.channel}]
-      </p>
+      <p className="text-foreground">{data.label}</p>
       <Title level={3}>{data.value ?? 0}</Title>
     </BaseNode>
   );

@@ -122,27 +122,32 @@ export const TemplateEdit = () => {
   const handleSave = () => {
     const data = rfInstance?.toObject();
     if (!data) return;
+
     const { x, y, zoom } = data.viewport || {};
 
-    const channels = data?.nodes.map(node => ({
+    const nodes = (data.nodes || []).map(node => {
+      const { existingChannels, ...restData } = node.data || {};
+      return {
+        ...node,
+        data: restData,
+      };
+    });
+
+    const channels = nodes.map(node => ({
       name: node.data.channel,
       type: nodeTypeToChannelType(node.type as ENodeTypes),
     }));
 
     const newChannels = [...(templateData?.channels || []), ...channels].filter(
       (channel, index, self) =>
-        index === self.findIndex(c => c.name === channel.name) && channel?.name
+        !!channel?.name && index === self.findIndex(c => c.name === channel.name)
     );
 
     onFinish({
       desktopPrototype: {
-        nodes: data?.nodes,
-        edges: data?.edges,
-        viewport: {
-          x,
-          y,
-          zoom,
-        },
+        nodes,
+        edges: data.edges,
+        viewport: { x, y, zoom },
       },
       channels: newChannels,
     } as Partial<ITemplate>);
@@ -207,10 +212,8 @@ export const TemplateEdit = () => {
       }
     };
 
-    // Add event listener
     document.addEventListener('keydown', handleKeyDown);
 
-    // Remove event listener on cleanup
     return () => {
       document.removeEventListener('keydown', handleKeyDown);
     };
@@ -228,7 +231,7 @@ export const TemplateEdit = () => {
             <ReactFlow
               ref={ref}
               onViewportChange={onViewportChange}
-              viewport={viewport}
+              defaultViewport={viewport}
               onContextMenu={onContextMenu}
               onPaneClick={onPaneClick}
               onInit={setRfInstance}

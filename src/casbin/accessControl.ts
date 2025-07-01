@@ -23,8 +23,12 @@ p, 1, devices, (list)|(create)|(edit)|(show)|(delete)
 p, 1, notifications, (list)|(create)|(edit)|(show)|(delete)
 p, 1, devices-map, (list)|(create)|(edit)|(show)|(delete)
 p, 1, templates, (list)|(create)|(edit)|(show)|(delete)
+p, 1, profile, (list)
+p, 1, statuses, (list)|(create)|(edit)|(show)|(delete)
 
 p, 2, devices, (list)|(create)|(edit)|(show)|(delete)
 p, 2, notifications, (list)|(create)|(edit)|(show)|(delete)
-
+p, 2, profile, (list)
+p, 2, devices-map, (list)|(create)|(edit)|(show)|(delete)
+p, 2, templates, (list)|(create)|(edit)|(show)|(delete)
 `);

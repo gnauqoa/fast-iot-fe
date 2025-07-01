@@ -1,9 +1,9 @@
 import type { RefineThemedLayoutV2HeaderProps } from '@refinedev/antd';
-import { useGetIdentity } from '@refinedev/core';
-import { Layout as AntdLayout, Space, Switch, Typography, theme } from 'antd';
-import React, { useContext } from 'react';
-import { ColorModeContext } from '@/contexts/color-mode';
+import { useGetIdentity, useLogout } from '@refinedev/core';
+import { Layout as AntdLayout, Space, Typography, theme, Avatar, Dropdown, Menu } from 'antd';
+import React from 'react';
 import { IUser } from 'interfaces/user';
+import { useNavigate } from 'react-router';
 
 const { Text } = Typography;
 const { useToken } = theme;
@@ -11,7 +11,8 @@ const { useToken } = theme;
 export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({ sticky }) => {
   const { token } = useToken();
   const { data: user } = useGetIdentity<IUser>();
-  const { mode, setMode } = useContext(ColorModeContext);
+  const navigate = useNavigate();
+  const { mutate: logout } = useLogout();
 
   const headerStyles: React.CSSProperties = {
     backgroundColor: token.colorBgElevated,
@@ -28,18 +29,34 @@ export const Header: React.FC<RefineThemedLayoutV2HeaderProps> = ({ sticky }) =>
     headerStyles.zIndex = 1;
   }
 
+  const menu = (
+    <Menu
+      items={[
+        {
+          key: 'profile',
+          label: 'My Profile',
+          onClick: () => navigate('/profile'),
+        },
+        {
+          key: 'logout',
+          label: 'Logout',
+          onClick: () => logout(),
+        },
+      ]}
+    />
+  );
+
   return (
     <AntdLayout.Header style={headerStyles}>
       <Space>
-        <Switch
-          checkedChildren="🌛"
-          unCheckedChildren="🔆"
-          onChange={() => setMode(mode === 'light' ? 'dark' : 'light')}
-          defaultChecked={mode === 'light'}
-        />
-        <Space style={{ marginLeft: '8px' }} size="middle">
-          {user?.fullName && <Text strong>{user.fullName}</Text>}
-        </Space>
+        <Dropdown overlay={menu} trigger={['click']}>
+          <Space style={{ cursor: 'pointer' }}>
+            <Avatar src={user?.avatar} style={{ backgroundColor: '#1890ff' }}>
+              {user?.fullName?.[0] ?? 'U'}
+            </Avatar>
+            <Text strong>{user?.fullName}</Text>
+          </Space>
+        </Dropdown>
       </Space>
     </AntdLayout.Header>
   );

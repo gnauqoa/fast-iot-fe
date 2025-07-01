@@ -1,8 +1,8 @@
-import { Icon } from '@iconify/react';
 import { useSubscription } from '@refinedev/core';
 import { Badge } from 'antd';
 import { useEffect, useState } from 'react';
 import { axiosInstance } from '@/utility/axios';
+import { Bell } from 'lucide-react';
 
 export const NotificationIcon: React.FC = () => {
   const [unreadCount, setUnreadCount] = useState<number>(0);
@@ -42,9 +42,9 @@ export const NotificationIcon: React.FC = () => {
   });
 
   return (
-    <div className="relative inline-block mr-[10px]">
+    <div className="flex items-center justify-center mr-[10px]">
       <Badge count={unreadCount} size="small">
-        <Icon icon="mdi:bell" width="16" height="16" />
+        <Bell strokeWidth={1.25} size={16} />
       </Badge>
     </div>
   );

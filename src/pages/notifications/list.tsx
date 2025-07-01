@@ -8,8 +8,6 @@ import { useCustomMutation, useSubscription } from '@refinedev/core';
 const { Text } = Typography;
 
 export const NotificationList = () => {
-  const [form] = Form.useForm();
-
   const { tableProps, tableQuery } = useTable<INotification>({
     resource: 'notifications',
     syncWithLocation: true,
@@ -68,8 +66,9 @@ export const NotificationList = () => {
           icon={<CheckCircleOutlined />}
           onClick={handleMarkAllAsRead}
           loading={markingAll}
+          disabled={tableProps.dataSource?.every(item => item.isRead)}
         >
-          Mark All as Read
+          Mark all as read
         </Button>
       </Space>
 
