@@ -1,49 +1,80 @@
-# FastIoT Frontend 🚀
+<div id="top">
 
-## Overview
+<!-- HEADER STYLE: CONSOLE -->
+<div align="center">
 
-FastIoT is an open-source platform designed to simplify and accelerate the development of IoT projects. The frontend, built with **Refine** as the admin panel framework, provides a user-friendly interface for managing IoT devices, monitoring real-time data, and configuring system settings. It integrates seamlessly with the FastIoT backend to deliver an intuitive and responsive experience for developers and end-users. This repository contains the frontend codebase for FastIoT, enabling efficient management of IoT applications through a modern, scalable interface.
+<h1 align="center">
+  <br>
+  <a href="http://www.amitmerchant.com/electron-markdownify"><img src="https://raw.githubusercontent.com/gnauqoa/fast-iot-fe/c8f4e737913bd522e44882d34bd66b855ba340f1/public/fast-iot-no-text.svg"alt="Markdownify" width="200"></a>
+  <br>Fast IoT - Admin
+  <br>
+</h1>
 
-## Purpose and Vision
+<h4 align="center">A framework to quick start IoT project.</h4>
+</div>
+<p align="center">
+  <a href="#overview">Overview</a> •
+  <a href="#features">Features</a> •
+  <a href="#installation">Installation</a> •
+  <a href="#usage">Usage</a> •
+  <a href="#quality-management">Quality Management</a> •
+  <a href="#technical-stack">Technical Stack</a> •
+  <a href="#license">License</a>
+</p>
 
-- **Purpose**: The FastIoT frontend aims to provide a streamlined, intuitive interface that simplifies the management and monitoring of IoT projects. It enables developers, especially students and startups, to interact with IoT systems without requiring deep technical knowledge, reducing the complexity of integrating and managing IoT devices.
-- **Vision**: To become a leading open-source frontend for IoT development, empowering users to visualize, control, and scale IoT applications effectively. The frontend is designed to be flexible, secure, and future-ready, supporting advanced features like edge AI integration and multi-language accessibility.
+<div align="center">
+  <img src="https://img.shields.io/badge/React-20232A.svg?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
+  <img src="https://img.shields.io/badge/Refine-242938.svg?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMi42NCA2LjI2TDYuMjYgMTIuNjRsMi4xMiAyLjEyTDE0Ljc2IDguMzh2Ni4xMmgyVjYuMjZoLTIuMTJ6Ii8+PC9zdmc+" alt="Refine">
+  <img src="https://img.shields.io/badge/AntDesign-0170FE.svg?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design">
+  <img src="https://img.shields.io/badge/Redux-764ABC.svg?style=flat-square&logo=redux&logoColor=white" alt="Redux">
+  <img src="https://img.shields.io/badge/Socket.io-010101.svg?style=flat-square&logo=socketdotio&logoColor=white" alt="Socket.io">
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
+  <img src="https://img.shields.io/badge/Casbin-0066FF.svg?style=flat-square&logoColor=white" alt="Casbin">
+   <img src="https://img.shields.io/badge/ReactFlow-f56cfc.svg?style=flat-square&logo=react&logoColor=white" alt="React Flow" />
+</div>
 
-## Features
+</div>
 
-- **Admin Panel**: Built with Refine, offering a responsive and intuitive interface for managing IoT devices, data streams, and system configurations.
-- **Real-Time Monitoring**: Displays real-time device status and data flows using MQTT integration with the Mosquitto broker via the backend.
-- **User-Friendly Design**: Follows Material Design principles, optimized for both desktop and mobile browsers, ensuring accessibility for non-technical users.
-- **Multi-Language Support**: Supports multiple languages to enhance accessibility for the global open-source community.
-- **Security**: Integrates with a secure backend, leveraging TLS 1.3 for data transmission and role-based access control for user management.
+## 🧭 Overview
 
-## Project Goals
+**FastIoT** is an open-source platform designed to simplify and accelerate the development of IoT projects — from device communication to user-facing dashboards.  
+The **frontend**, built with [**Refine**](https://refine.dev/), serves as an admin panel that is not only intuitive and responsive but also **highly customizable** to fit diverse project requirements.
 
-- Provide a comprehensive open-source frontend to connect developers with IoT devices and data management systems.
-- Enable rapid setup and interaction with IoT projects, minimizing configuration efforts.
-- Offer a simple, easy-to-use interface for developers, particularly students and startups, to manage and prototype IoT applications.
-- Enhance the flexibility and reliability of IoT systems through a modern, scalable frontend integrated with advanced technologies.
+Key capabilities include:
 
-## Objectives
+- **Flexible customization** for layout, theming, access control, and data models  
+- **Real-time monitoring** of IoT devices via MQTT and WebSocket integration  
+- Seamless connection with the FastIoT backend for device provisioning, messaging, and analytics
 
-- Develop a Refine-based admin panel that integrates seamlessly with the FastIoT backend (NestJS, PostgreSQL, MongoDB, Redis, Mosquitto) for managing IoT projects.
-- Optimize the user experience with an intuitive, responsive interface that requires minimal technical expertise.
-- Support extensibility for future integrations, such as advanced IoT security features and diverse device compatibility.
-- Ensure the frontend is globally accessible with multi-language support and compliance with accessibility standards.
+This repository contains the **frontend codebase** that enables developers to rapidly prototype, deploy, and extend IoT applications using a modern, scalable React architecture.
 
-## Success Criteria
+---
 
-- Developers can easily initialize and manage IoT projects through the admin panel, receiving rapid system feedback.
-- The frontend operates reliably with no critical failures during development or deployment.
-- The admin panel is user-friendly, intuitive, and fully functional across popular browsers and mobile devices.
-- Achieves at least 75% successful IoT project management interactions within six months of launch, based on developer and tester feedback.
-- Budget adherence: Total development cost not exceeding 300 million VND, with monthly operational costs under 8 million VND.
+## 🚀 Features
+
+- **🔧 Highly Customizable Admin Panel**  
+  Built with Refine and Tailwind, allowing developers to easily modify UI components, workflows, and access control to suit any project.
+
+- **📡 Real-Time Monitoring**  
+  Displays live status, telemetry, and events from IoT devices via MQTT (Mosquitto) and WebSocket bridges through the backend.
+
+- **📱 Responsive Design**  
+  Built with accessibility in mind and optimized for both desktop and mobile views.
+
+- **🌐 Multi-Language Support**  
+  Internationalization (i18n) out of the box for building globally accessible applications.
+
+- **🔐 Secure by Design**  
+  Integrates with the backend to support TLS 1.3, JWT authentication, and role-based access control (RBAC).
+
+- **📦 Modular & Extendable**  
+  Easy to add custom pages, dashboards, or integrate with external APIs thanks to the modular architecture powered by Refine.
 
 ## Installation
 
 ### Prerequisites
 
-- Node.js (v16 or higher)
+- Node.js (18 or higher)
 - Git
 - Access to the FastIoT backend (running at `http://localhost:3000` or a deployed instance)
 
@@ -94,7 +125,7 @@ FastIoT is an open-source platform designed to simplify and accelerate the devel
 
 ## Usage
 
-- **Admin Panel Access**: Access the admin panel via the browser at `http://localhost:3001` (or the configured port) to manage IoT devices, view real-time data, and configure system settings.
+- **Admin Panel Access**: Access the admin panel via the browser at `http://localhost:4000` (or the configured port) to manage IoT devices, view real-time data, and configure system settings.
 - **Device Management**: Use the interface to monitor device status, manage connections, and visualize data streams from IoT devices via MQTT.
 - **Customization**: Extend the admin panel by adding new modules or integrating additional features as needed, leveraging Refine's modular architecture.
 
@@ -118,4 +149,4 @@ FastIoT is an open-source platform designed to simplify and accelerate the devel
 
 ## License
 
-This project is licensed under the MIT License. See the `LICENSE` file for details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
