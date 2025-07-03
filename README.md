@@ -10,10 +10,9 @@
   <br>
 </h1>
 
-<h4 align="center">A framework to quick start IoT project.</h4>
+<h4>A full-stack framework to fast-track your IoT development.</h4>
 </div>
 <p align="center">
-  <a href="#overview">Overview</a> •
   <a href="#features">Features</a> •
   <a href="#installation">Installation</a> •
   <a href="#usage">Usage</a> •
@@ -23,32 +22,29 @@
 </p>
 
 <div align="center">
-  <img src="https://img.shields.io/badge/React-20232A.svg?style=flat-square&logo=react&logoColor=61DAFB" alt="React">
-  <img src="https://img.shields.io/badge/Refine-242938.svg?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMi42NCA2LjI2TDYuMjYgMTIuNjRsMi4xMiAyLjEyTDE0Ljc2IDguMzh2Ni4xMmgyVjYuMjZoLTIuMTJ6Ii8+PC9zdmc+" alt="Refine">
-  <img src="https://img.shields.io/badge/AntDesign-0170FE.svg?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design">
-  <img src="https://img.shields.io/badge/Redux-764ABC.svg?style=flat-square&logo=redux&logoColor=white" alt="Redux">
-  <img src="https://img.shields.io/badge/Socket.io-010101.svg?style=flat-square&logo=socketdotio&logoColor=white" alt="Socket.io">
-  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS">
-  <img src="https://img.shields.io/badge/Casbin-0066FF.svg?style=flat-square&logoColor=white" alt="Casbin">
-   <img src="https://img.shields.io/badge/ReactFlow-f56cfc.svg?style=flat-square&logo=react&logoColor=white" alt="React Flow" />
+  <!-- Core Framework -->
+  <img src="https://img.shields.io/badge/React-20232A.svg?style=flat-square&logo=react&logoColor=61DAFB" alt="React" />
+  <img src="https://img.shields.io/badge/Refine-242938.svg?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyBmaWxsPSIjZmZmIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMCIgaGVpZ2h0PSIyMCI+PHBhdGggZD0iTTAgMGgyMHYyMEgweiIgZmlsbD0ibm9uZSIvPjxwYXRoIGQ9Ik0xMi42NCA2LjI2TDYuMjYgMTIuNjRsMi4xMiAyLjEyTDE0Ljc2IDguMzh2Ni4xMmgyVjYuMjZoLTIuMTJ6Ii8+PC9zdmc+" alt="Refine" />
+
+  <!-- UI & Styling -->
+  <img src="https://img.shields.io/badge/Ant%20Design-0170FE.svg?style=flat-square&logo=antdesign&logoColor=white" alt="Ant Design" />
+  <img src="https://img.shields.io/badge/TailwindCSS-06B6D4.svg?style=flat-square&logo=tailwindcss&logoColor=white" alt="Tailwind CSS" />
+  <img src="https://img.shields.io/badge/Radix%20UI-000000.svg?style=flat-square&logo=radixui&logoColor=white" alt="Radix UI" />
+
+  <!-- State & Permissions -->
+  <img src="https://img.shields.io/badge/Redux-764ABC.svg?style=flat-square&logo=redux&logoColor=white" alt="Redux" />
+  <img src="https://img.shields.io/badge/Casbin-0066FF.svg?style=flat-square&logoColor=white" alt="Casbin" />
+
+  <!-- Realtime & Visualization -->
+  <img src="https://img.shields.io/badge/Socket.io-010101.svg?style=flat-square&logo=socketdotio&logoColor=white" alt="Socket.io" />
+  <img src="https://img.shields.io/badge/ReactFlow-f56cfc.svg?style=flat-square&logo=react&logoColor=white" alt="React Flow" />
+  <img src="https://img.shields.io/badge/React--Leaflet-4CAF50.svg?style=flat-square&logo=leaflet&logoColor=white" alt="React Leaflet" />
+
+  <!-- Internationalization -->
+  <img src="https://img.shields.io/badge/i18n-Internationalization-007acc.svg?style=flat-square&logo=googletranslate&logoColor=white" alt="i18n" />
 </div>
 
 </div>
-
-## 🧭 Overview
-
-**FastIoT** is an open-source platform designed to simplify and accelerate the development of IoT projects — from device communication to user-facing dashboards.  
-The **frontend**, built with [**Refine**](https://refine.dev/), serves as an admin panel that is not only intuitive and responsive but also **highly customizable** to fit diverse project requirements.
-
-Key capabilities include:
-
-- **Flexible customization** for layout, theming, access control, and data models  
-- **Real-time monitoring** of IoT devices via MQTT and WebSocket integration  
-- Seamless connection with the FastIoT backend for device provisioning, messaging, and analytics
-
-This repository contains the **frontend codebase** that enables developers to rapidly prototype, deploy, and extend IoT applications using a modern, scalable React architecture.
-
----
 
 ## 🚀 Features
 
@@ -120,8 +116,9 @@ This repository contains the **frontend codebase** that enables developers to ra
    ```
 6. Start the development server:
    ```bash
-   npm run start
+   npm run dev
    ```
+   The app will be available at http://localhost:4000 (or whatever Vite's port is configured).
 
 ## Usage
 
@@ -129,23 +126,23 @@ This repository contains the **frontend codebase** that enables developers to ra
 - **Device Management**: Use the interface to monitor device status, manage connections, and visualize data streams from IoT devices via MQTT.
 - **Customization**: Extend the admin panel by adding new modules or integrating additional features as needed, leveraging Refine's modular architecture.
 
-## Quality Management
-
-- **Standards**:
-  - Adheres to Material Design principles for a consistent and intuitive user experience.
-  - Supports multi-language interfaces for global accessibility.
-  - Ensures compatibility with popular browsers and mobile devices.
-  - Complies with OWASP Top 10 for frontend security, integrating with a secure backend.
-- **Control Procedures**:
-  - Git-based version control with strict pull request and code review processes.
-  - Automated testing (unit and integration tests) via tools like Jest or Cypress.
-  - Monitoring with tools like Prometheus and Grafana (via backend integration(“ for performance tracking.
-  - Role-based access control with two-factor authentication (2FA) for admin users.
-
 ## Technical Stack
 
-- **Framework**: Refine (React-based admin panel framework)
-- **UI Design**: Material Design
+- ⚛️ **Framework**: [Refine](https://refine.dev/) – React-based admin panel framework for rapid CRUD and dashboard development
+- 🟦 **Language**: TypeScript
+- 🎨 **UI Libraries**:
+  - 🧩 [Ant Design](https://ant.design/) – enterprise-grade UI components
+  - 💨 [Tailwind CSS](https://tailwindcss.com/) – utility-first CSS framework
+  - 🎯 [Lucide](https://lucide.dev/) – open-source icon library
+  - 🧠 [React Flow](https://reactflow.dev/) – interactive node-based flow editor
+- 🧠 **State Management**: [Redux Toolkit](https://redux-toolkit.js.org/)
+- 📡 **Real-Time Communication**:
+  - 🔌 WebSocket via [Socket.IO](https://socket.io/)
+  - 📶 MQTT via backend integration with [Mosquitto](https://mosquitto.org/)
+- 🛡️ **Access Control**: [Casbin](https://casbin.org/) – RBAC/ABAC for fine-grained authorization
+- 🗺️ **Maps & Geolocation**: [Leaflet](https://leafletjs.com/) + [React Leaflet](https://react-leaflet.js.org/)
+- 📝 **Markdown Editor**: [React MDE](https://uiwjs.github.io/react-md-editor/)
+- ⚡ **Bundler**: [Vite](https://vitejs.dev/) – lightning-fast dev environment
 
 ## License
 
