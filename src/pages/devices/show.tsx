@@ -131,6 +131,7 @@ export const DeviceShow = () => {
   useEffect(() => {
     if (!record) return;
     updateView(record);
+    console.log('record', record);
     socket.emit(JOIN_DEVICE_ROOM_CHANNEL, record.id);
     socket.on(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
 
@@ -138,7 +139,7 @@ export const DeviceShow = () => {
       socket.emit(LEAVE_DEVICE_ROOM_CHANNEL, record.id);
       socket.off(HANDLE_DEVICE_DATA_CHANNEL, handleDeviceUpdate);
     };
-  }, [record, handleDeviceUpdate, updateView]);
+  }, [record]);
 
   if (!device) return <></>;
 
@@ -151,12 +152,7 @@ export const DeviceShow = () => {
       title={''}
     >
       <DeviceMapModal open={open} onClose={() => setOpen(false)} device={device} />
-      <DeviceModal
-        open={editDevice}
-        device={device}
-        onCancel={() => setEditDevice(false)}
-        onSuccess={() => setEditDevice(false)}
-      />
+
       <Flex vertical gap={12}>
         <Flex gap={12} align="center" style={{ width: '100%' }}>
           <Title level={3} style={{ marginBottom: 0 }}>

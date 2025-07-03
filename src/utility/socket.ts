@@ -35,6 +35,7 @@ const initializeSocket = (): Socket => {
 };
 
 export const connectSocket = () => {
+  return null;
   const socket = initializeSocket();
   if (!socket.connected) {
     console.log('Connecting socket');
